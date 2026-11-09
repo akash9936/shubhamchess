@@ -18,7 +18,9 @@ radar `p:proj-shubham-chess-site`.
   photo, poster) · 26 three guide pages in `guides/` (Claude's copy, parent-facing, bylined
   Shubham — **he should read them once**) · 27 OG image, canonical, hreflang, JSON-LD
   (Person + EducationalOrganization + Service + Article), sitemap.xml, robots.txt ·
-  28 GA4 snippet commented in `<head>` + `contact_click` events wired · 30 `hi/index.html`
+  28 GA4 LIVE (`G-JBH3RL4PTN`, 2026-11-09, Shubham's Google account; the GTM container
+  `GTM-5T7NTCNJ` Akash pasted wraps the same property — we load gtag.js directly) +
+  `contact_click` events wired on all 5 pages · 30 `hi/index.html`
   Hindi page (Claude's translation of his bio/FAQ — **he should proof it**).
 - NOT done: 17 Google Business Profile (needs Shubham's Google account; then add a "Read our
   Google reviews" link) · 23 coach intro video (commented `<iframe>` slot in the coach
@@ -143,10 +145,12 @@ is unverified.
 ## Repo + deploy (2026-11-09)
 - GitHub repo: https://github.com/akash9936/shubhamchess — this folder is its own git repo
   (nested inside personal-projects, which ignores it). `assets/` and `draft/` are gitignored.
-- Deploy: `.github/workflows/pages.yml` publishes `site/` to GitHub Pages on every push to
-  `main` (Actions source, auto-enabled). URL until a custom domain is set:
-  https://akash9936.github.io/shubhamchess/ — paths are relative so it works under the
-  subpath; canonical/OG still point at shubham.akashs.com.
+- **LIVE at https://shubham.akashs.com since 2026-11-09 17:43 IST.** Deploy: `.github/workflows/pages.yml`
+  publishes `site/` on every push to `master` (or `main`); Pages source = GitHub Actions;
+  custom domain set in repo Settings → Pages, DNS check green, HTTPS enforced. DNS: GoDaddy
+  CNAME `shubham` → `shubhamprofile.github.io` (odd target, but resolves to GitHub Pages and
+  passes the check — left alone). Branch is `master`. Old `shubhamProfile` repo is now
+  superseded; its CNAME file can be deleted.
 - Claude cannot run `git add/commit/push` (workspace deny list); Akash pushes.
 
 ## Hosting plan

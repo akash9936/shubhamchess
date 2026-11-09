@@ -31,9 +31,9 @@ shubham-chess-site/
   through a 390-px iframe wrapper — see NOTES.md "Verifying"). Check: tag balance, 64 `.sq`
   buttons in the dumped DOM (= JS ran), no element wider than the viewport, local links and
   `#anchors` resolve, `grep -c 'class="ph"'`.
-- **The site's domain is assumed to be `https://shubham.akashs.com`** (canonical, OG,
-  sitemap, JSON-LD, PDF footer). If a different domain is bought, replace it everywhere:
-  `grep -rl shubham.akashs.com site/`.
+- **Live at `https://shubham.akashs.com`** (GitHub Pages via Actions, repo
+  github.com/akash9936/shubhamchess, branch `master`). Every push to `site/` deploys in
+  ~30 s. Akash pushes; Claude cannot (`git add/commit/push` denied).
 - `draft/` is history. Do not edit it; the review artifact
   (https://claude.ai/artifact/21CLknbpb6TKQqnyZhkVMD) was published from it.
 - Tracking (status, blockers, decisions) lives in Life OS at
@@ -88,7 +88,8 @@ The rules the page is written to. Feedback from Akash changes this list, never j
   and fee details"). Don't add a fee column back unless he sends prices.
 - **Every page has the floating WhatsApp button** (`.wa-float`) and a `tel:` link next to
   the WhatsApp number. Clicks on wa.me / tel: / download links fire a GA4 `contact_click`
-  event when `gtag` exists, and are silent otherwise.
+  event (property `G-JBH3RL4PTN`, loaded via gtag.js in every page's `<head>`). A new
+  page must carry the same snippet; guide pages are the template.
 - **Hindi page mirrors the English one** for anything a parent decides on (hero, levels,
   class, coach, results, plans, FAQ, contact). Reviews stay in the parents' original English.
   Change both pages together.
@@ -193,3 +194,11 @@ When Akash gives feedback on the site, the copy, the design, or how this project
   commented slot awaiting a video. CSS moved to `styles.css`; Hindi page and three guide
   pages added; puzzle PDF generated with every position machine-verified (python-chess).
   Verification method recorded in NOTES.md → "Verifying".
+- 2026-11-09 — Akash: link the project to github.com/akash9936/shubhamchess and push; then
+  wire shubham.akashs.com. → .gitignore (assets/, draft/), Pages workflow, README added;
+  Akash pushed (to `master`, so the workflow now listens on both branches); Pages source
+  switched to GitHub Actions, custom domain attached, HTTPS on. Live and verified 17:43.
+- 2026-11-09 — Akash pasted a GTM container snippet for analytics. → The container
+  (`GTM-5T7NTCNJ`) embeds GA4 property `G-JBH3RL4PTN`; wired gtag.js with that ID into all
+  five pages instead of GTM (fewer moving parts, and our `gtag('event')` calls work as is).
+  Rule: analytics = GA4 via gtag.js, one property, no Tag Manager layer.
