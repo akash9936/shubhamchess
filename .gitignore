@@ -1,0 +1,5 @@
+# source material: original photos (one shows a child's name tag) and the raw poster — never published
+assets/
+.DS_Store
+# the review-draft artifact body is history, kept locally only
+draft/

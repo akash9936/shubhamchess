@@ -1,0 +1,564 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Live online chess coaching for children aged 4 to 15 with Shubham Singh, Arena International Master and three-time state age-group champion. Book a free assessment class on WhatsApp.">
+<meta name="theme-color" content="#1f5a3f">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Shubham Singh Chess Coaching">
+<meta property="og:description" content="Live online chess classes for children aged 4 to 15. Structured curriculum, weekly homework, free assessment class.">
+<meta property="og:image" content="https://shubham.akashs.com/og.png">
+<meta property="og:url" content="https://shubham.akashs.com/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://shubham.akashs.com/">
+<link rel="alternate" hreflang="en" href="https://shubham.akashs.com/">
+<link rel="alternate" hreflang="hi" href="https://shubham.akashs.com/hi/">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@graph":[
+ {"@type":"Person","@id":"https://shubham.akashs.com/#coach","name":"Shubham Singh","jobTitle":"Chess coach","description":"Arena International Master and FIDE rated player coaching children aged 4 to 15 online.","image":"https://shubham.akashs.com/shubham.jpg","url":"https://shubham.akashs.com/","sameAs":["https://www.instagram.com/shubhamsinghchess/","https://ratings.fide.com/profile/25799363"],"knowsLanguage":["en","hi"]},
+ {"@type":"EducationalOrganization","@id":"https://shubham.akashs.com/#academy","name":"Shubham Chess Academy","url":"https://shubham.akashs.com/","logo":"https://shubham.akashs.com/favicon.svg","founder":{"@id":"https://shubham.akashs.com/#coach"},"areaServed":"Worldwide","contactPoint":{"@type":"ContactPoint","contactType":"admissions","telephone":"+91-62328-81878","availableLanguage":["English","Hindi"]}},
+ {"@type":"Service","serviceType":"Online chess coaching for children","provider":{"@id":"https://shubham.akashs.com/#academy"},"audience":{"@type":"PeopleAudience","suggestedMinAge":4,"suggestedMaxAge":15},"offers":{"@type":"Offer","name":"Free assessment class","price":"0","priceCurrency":"INR"}}
+]}
+</script>
+<!-- GA4 (item 28): uncomment and replace G-XXXXXXXXXX once Shubham's property exists.
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-XXXXXXXXXX');</script>
+-->
+<title>Shubham Singh Chess Coaching</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="#top"><span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Shubham Singh Chess</a>
+    <nav class="links" aria-label="Sections">
+      <a href="#levels">Levels</a>
+      <a href="#class">Classes</a>
+      <a href="#coach">Coach</a>
+      <a href="#results">Results</a>
+      <a href="#timings">Timings</a>
+      <a href="#fees">Plans</a>
+      <a href="#guides">Guides</a>
+      <a href="#faq">FAQ</a>
+      <a href="https://www.instagram.com/shubhamsinghchess/" target="_blank" rel="noopener">Instagram</a>
+    </nav>
+    <a class="lang" href="hi/" lang="hi" hreflang="hi" title="हिन्दी में पढ़ें">हिन्दी</a>
+    <a class="btn primary small" href="#demo">Free assessment</a>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="wrap">
+      <div class="hero-copy">
+        <span class="eyebrow">Live online chess coaching · ages 4 to 15</span>
+        <h1>Learn to <em>think first</em>, then move.</h1>
+        <p class="lede">Live one-to-one and small-group chess classes for children, taught by Shubham Singh, an Arena International Master and three-time state age-group champion. A structured curriculum, personalised to each child, with weekly homework and assessments. Helping young minds think strategically through chess.</p>
+        <div class="cta-row">
+          <a class="btn primary" href="#demo">Book a free assessment class</a>
+          <a class="btn ghost" href="#levels">See the levels</a>
+        </div>
+        <ul class="facts">
+          <li>Arena International Master</li>
+          <li>FIDE rated player</li>
+          <li>Classes in English and Hindi</li>
+          <li>Students welcome worldwide</li>
+          <li><a href="https://www.instagram.com/shubhamsinghchess/" target="_blank" rel="noopener">@shubhamsinghchess</a></li>
+        </ul>
+      </div>
+
+      <div class="puzzle" aria-labelledby="pz-title">
+        <div class="puzzle-head">
+          <b id="pz-title">Try a lesson puzzle</b>
+          <span class="eyebrow">White to move · mate in 1</span>
+        </div>
+        <div class="board-frame">
+          <div class="ranks" aria-hidden="true"><span>8</span><span>7</span><span>6</span><span>5</span><span>4</span><span>3</span><span>2</span><span>1</span></div>
+          <div class="board" id="board" role="group" aria-label="Chess board. White to move and give checkmate in one."></div>
+          <div class="files" aria-hidden="true"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span><span>g</span><span>h</span></div>
+        </div>
+        <p class="puzzle-msg" id="pz-msg" aria-live="polite">Tap a white piece, then tap the square it should go to.</p>
+        <div class="puzzle-actions">
+          <button class="btn ghost small" id="pz-show" type="button">Show the answer</button>
+          <button class="btn ghost small" id="pz-reset" type="button">Reset</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="stats" aria-label="At a glance">
+    <div class="wrap">
+      <dl class="statgrid">
+        <div><dd>1738</dd><dt>FIDE rating</dt></div>
+        <div><dd>100+</dd><dt>students taught</dt></div>
+        <div><dd>3</dd><dt>state titles</dt></div>
+        <div><dd>2+</dd><dt>years coaching online</dt></div>
+        <div><dd>5</dd><dt>students max per group</dt></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="block" id="levels">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Levels</span>
+        <h2>Three levels, placed by playing strength</h2>
+        <p class="lede">The free assessment class decides where a child starts. From there the curriculum covers opening principles, tactical training, endgame techniques and tournament preparation, at the child's pace.</p>
+      </div>
+      <div class="levels">
+        <article class="level">
+          <span class="piece" aria-hidden="true">♟&#xFE0E;</span>
+          <h3>Beginner</h3>
+          <ul>
+            <li>How each piece moves and what it is worth</li>
+            <li>Check, checkmate and stalemate</li>
+            <li>Basic mates with queen and rook</li>
+            <li>Opening principles: centre, development, king safety</li>
+          </ul>
+          <div class="meta"><span>Rating: unrated to <span class="ph">~1000</span></span><span>Batch size: up to 5 students</span></div>
+        </article>
+        <article class="level">
+          <span class="piece" aria-hidden="true">♞&#xFE0E;</span>
+          <h3>Intermediate</h3>
+          <ul>
+            <li>Tactics: forks, pins, skewers, discovered attacks</li>
+            <li>A small opening repertoire for White and Black</li>
+            <li>King-and-pawn and rook endgames</li>
+            <li>Calculating three moves deep without touching a piece</li>
+          </ul>
+          <div class="meta"><span>Rating: <span class="ph">~1000 to ~1500</span></span><span>Batch size: up to 5 students</span></div>
+        </article>
+        <article class="level">
+          <span class="piece" aria-hidden="true">♛&#xFE0E;</span>
+          <h3>Tournament</h3>
+          <ul>
+            <li>Opening preparation against specific opponents</li>
+            <li>Positional play and planning in the middlegame</li>
+            <li>Review of the student's own tournament games</li>
+            <li>Clock handling and pre-round routine</li>
+          </ul>
+          <div class="meta"><span>Rating: <span class="ph">~1500 and above</span></span><span>Format: one-to-one</span></div>
+        </article>
+      </div>
+
+      <div class="picker" id="picker">
+        <div class="picker-head">
+          <h3>Not sure which level?</h3>
+          <p class="note" style="margin-top:4px">Three quick questions. Nothing is sent anywhere until you tap the WhatsApp button.</p>
+        </div>
+        <form class="picker-form" id="picker-form">
+          <fieldset>
+            <legend>Has your child played chess before?</legend>
+            <label><input type="radio" name="exp" value="0" required> Never, or only a little</label>
+            <label><input type="radio" name="exp" value="1"> Knows all the moves and plays at home or online</label>
+            <label><input type="radio" name="exp" value="2"> Plays in school or rated tournaments</label>
+          </fieldset>
+          <fieldset>
+            <legend>Can your child do this?</legend>
+            <label><input type="radio" name="skill" value="0" required> Not yet sure</label>
+            <label><input type="radio" name="skill" value="1"> Checkmate with a king and queen against a lone king</label>
+            <label><input type="radio" name="skill" value="2"> Spot forks, pins and skewers in a game</label>
+          </fieldset>
+          <fieldset>
+            <legend>Online rating, if any (Lichess or Chess.com)</legend>
+            <label><input type="radio" name="rating" value="0" required> None</label>
+            <label><input type="radio" name="rating" value="1"> Under 1000</label>
+            <label><input type="radio" name="rating" value="2"> 1000 or above</label>
+          </fieldset>
+          <button class="btn ghost" type="submit">Show the suggested level</button>
+        </form>
+        <div class="picker-result" id="picker-result" hidden aria-live="polite">
+          <p><span class="eyebrow">Suggested level</span></p>
+          <h3 id="picker-level"></h3>
+          <p id="picker-why" class="note" style="margin-top:6px"></p>
+          <a class="btn primary" id="picker-wa" href="#" target="_blank" rel="noopener" data-loc="picker">Book the free assessment with these answers</a>
+          <p class="note" style="margin-top:8px">The assessment class, not this quiz, decides the final level.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="class">
+    <div class="wrap sheet">
+      <div class="head">
+        <span class="eyebrow">How a class runs</span>
+        <h2>One class, in four moves</h2>
+        <p class="lede">Every class follows the same order, so students know what to expect and parents know what was covered.</p>
+      </div>
+      <ol class="moves">
+        <li><div><h3>Warm-up puzzles</h3><p>Five to ten minutes of short tactics on the theme from last week, to see what stuck.</p></div></li>
+        <li><div><h3>One new idea</h3><p>A single concept taught on the live board with model games. One idea per class, taught properly.</p></div></li>
+        <li><div><h3>Play it out, then analyse</h3><p>Students play positions built around that idea against each other or the coach, say their plan out loud, and go over the game together afterwards.</p></div></li>
+        <li><div><h3>Weekly homework and assessment</h3><p>Puzzle practice to solve before the next class, a regular assessment of progress, and a short message to parents on what to practise. The aim is a better rating and better game sense.</p></div></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="block" id="join">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">How to join</span>
+        <h2>From first message to first class</h2>
+      </div>
+      <ol class="steps">
+        <li><b>1</b><h3>Message on WhatsApp</h3><p>Send your child's age and whether they have played before. Shubham replies with a slot for the free assessment.</p></li>
+        <li><b>2</b><h3>Free assessment class</h3><p>One live class. Your child plays and solves a few puzzles, and you see how a class feels.</p></li>
+        <li><b>3</b><h3>Level and format</h3><p>Shubham suggests a level and whether a small group or one-to-one suits your child, and you agree the timings.</p></li>
+        <li><b>4</b><h3>Start, with weekly updates</h3><p>Two classes a week, homework in between, regular assessments, and a note to parents on what to practise.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="block" id="coach">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Your coach</span>
+        <h2>Shubham Singh</h2>
+      </div>
+      <div class="about">
+        <!-- item 23, coach intro video: when Shubham records a 60-second intro, replace the <img> below with
+        <div class="video-wrap"><iframe src="https://www.youtube-nocookie.com/embed/VIDEO_ID" title="Meet coach Shubham Singh" loading="lazy" allowfullscreen></iframe></div> -->
+        <img class="photo" src="shubham.jpg" width="456" height="570" alt="Shubham Singh at the chessboard" loading="lazy">
+        <div class="about-copy">
+          <p>Shubham is an Arena International Master, a title awarded by FIDE Online Arena, and a FIDE rated over-the-board player. He won the Chhattisgarh state championship at under-17, under-19 and under-25 level and finished third in the Senior State Championship. He has coached more than a hundred children online over the past two years.</p>
+          <p>My chess journey began when my elder brother introduced me to the game. Through self-learning and practice, I developed my skills and eventually became a coach. I love helping children improve their chess skills, think independently, and enjoy learning.</p>
+          <dl class="creds">
+            <div><dt>Title</dt><dd>Arena International Master (AIM)</dd></div>
+            <div><dt>FIDE rating</dt><dd>1738 · <a href="https://ratings.fide.com/profile/25799363" target="_blank" rel="noopener">ID 25799363</a></dd></div>
+            <div><dt>State champion</dt><dd>U-17, U-19 and U-25 · Chhattisgarh</dd></div>
+            <div><dt>Senior State Championship</dt><dd>3rd place</dd></div>
+            <div><dt>Online coaching</dt><dd>2+ years</dd></div>
+            <div><dt>Students taught</dt><dd>100+</dd></div>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="lessons">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Free lessons</span>
+        <h2>See how he teaches before you book</h2>
+        <p class="lede">Shubham posts short lessons on <a href="https://www.instagram.com/shubhamsinghchess/" target="_blank" rel="noopener">Instagram</a>, each one a single idea explained on the board. These are some of the topics already up.</p>
+      </div>
+      <ul class="topics">
+        <li>Chess for beginners, part 1</li>
+        <li>Philidor Position</li>
+        <li>Lucena Position</li>
+        <li>Isolated pawn</li>
+        <li>Passed pawn</li>
+        <li>King's Indian Defence</li>
+        <li>Greek Gift sacrifice</li>
+        <li>X-ray attack</li>
+        <li>Discovered attack</li>
+        <li>Attackers vs defenders</li>
+        <li>How to stop castling</li>
+      </ul>
+      <div class="cta-row" style="margin-top:24px"><a class="btn ghost" href="https://www.instagram.com/shubhamsinghchess/" target="_blank" rel="noopener">Watch on Instagram @shubhamsinghchess</a></div>
+    </div>
+  </section>
+
+  <section class="block" id="practice">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Between classes</span>
+        <h2>Practice that keeps going after the class ends</h2>
+      </div>
+      <div class="practice">
+        <article class="pcard">
+          <span class="piece" aria-hidden="true">&#x2659;&#xFE0E;</span>
+          <h3>Ten starter puzzles, free</h3>
+          <p>A printable sheet of ten mate-in-one puzzles for a child who has just learned the moves, with answers on the last page. No sign-up.</p>
+          <a class="btn ghost" href="downloads/starter-puzzles.pdf" download data-loc="pdf">Download the PDF</a>
+        </article>
+        <article class="pcard">
+          <span class="piece" aria-hidden="true">&#x265E;&#xFE0E;</span>
+          <h3>Monthly student arena on Lichess</h3>
+          <p>Students play each other in a monthly online arena on Lichess, and the games are reviewed in class. <span class="ph">Team link once Shubham creates the Lichess team</span></p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="results">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Results and parents</span>
+        <h2>What students have done, and what parents say</h2>
+        <p class="lede">Real results from real students and reviews from their parents, in their own words.</p>
+      </div>
+      <div class="quotes">
+        <div class="quote"><img src="result-commonwealth-2026.jpg" width="900" height="564" alt="A young student holding her trophy at the Commonwealth Schools Chess Championship 2026" loading="lazy"><span class="medal" aria-hidden="true">🥉</span><b>3rd place, Commonwealth Schools Chess Championship 2026</b><p>Under-7 Girls, Rapid. Kuala Lumpur, Malaysia.</p><span>A student of Shubham's</span></div>
+        <div class="quote video">
+          <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/p/DbjTZAKuyDX/" data-instgrm-version="14"><a href="https://www.instagram.com/p/DbjTZAKuyDX/" target="_blank" rel="noopener">Watch on Instagram</a></blockquote>
+          <b>Understand the student first, then teach</b>
+          <p>How Shubham starts with a new student: find out how the child already thinks about the board before deciding what to teach them. From his Instagram.</p>
+          <span><a href="https://www.instagram.com/p/DbjTZAKuyDX/" target="_blank" rel="noopener">Watch the reel</a></span>
+        </div>
+        <div class="quote review"><span class="stars" aria-label="5 out of 5 stars">★★★★★</span><p>“Coach Shubham is a really talented coach and guided my son really well towards progress. He’s been nudging him whenever required and boosted his morale several times to increase his confidence and taught him really good chess skills. Keep going Coach! Thank you.”</p><span>Sushma, parent · March 2026</span></div>
+        <div class="quote review"><span class="stars" aria-label="5 out of 5 stars">★★★★★</span><p>“Good experience and made my daughter interested in playing chess. Think through and enjoy.”</p><span>Priyanka, parent · August 2026</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="gallery">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Gallery</span>
+        <h2>At the board</h2>
+      </div>
+      <div class="gallery">
+        <figure><img src="shubham.jpg" width="456" height="570" alt="Shubham Singh thinking over a position at the chessboard" loading="lazy"><figcaption>Coach Shubham at the board</figcaption></figure>
+        <figure><img src="result-commonwealth-2026.jpg" width="900" height="564" alt="A young student holding her bronze trophy" loading="lazy"><figcaption>Bronze at the Commonwealth Schools Chess Championship 2026</figcaption></figure>
+        <figure><img src="poster.jpg" width="1062" height="1424" alt="Poster: learn chess from an Arena International Master, kids aged 4 to 15" loading="lazy"><figcaption>The academy poster</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="timings">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Timings</span>
+        <h2>Classes run on Indian time, for students anywhere</h2>
+        <p class="lede">Slots are agreed with each family. These are the windows Shubham usually teaches in; the helper below shows what they mean where you live.</p>
+      </div>
+      <div class="timings">
+        <dl class="windows">
+          <div><dt>Weekdays</dt><dd><span class="ph">Shubham's weekday windows in IST, e.g. 4:00 to 9:00 pm</span></dd></div>
+          <div><dt>Weekends</dt><dd><span class="ph">Shubham's weekend windows in IST</span></dd></div>
+          <div><dt>Languages</dt><dd>English and Hindi</dd></div>
+        </dl>
+        <div class="tz" id="tz">
+          <p class="eyebrow">Your time vs India</p>
+          <p id="tz-now">Loading your time zone…</p>
+          <label for="tz-ist">Pick an Indian time to convert</label>
+          <select id="tz-ist">
+            <option value="7">7:00 am IST</option><option value="8">8:00 am IST</option><option value="9">9:00 am IST</option><option value="10">10:00 am IST</option>
+            <option value="16">4:00 pm IST</option><option value="17">5:00 pm IST</option><option value="18" selected>6:00 pm IST</option><option value="19">7:00 pm IST</option><option value="20">8:00 pm IST</option><option value="21">9:00 pm IST</option>
+          </select>
+          <p id="tz-out" class="tz-out"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="fees">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Class plans</span>
+        <h2>Class plans and learning options</h2>
+      </div>
+      <div class="table-scroll">
+        <table class="fees">
+          <thead><tr><th>Format</th><th>Classes</th><th>Details</th></tr></thead>
+          <tbody>
+            <tr><td>Small group</td><td>2 classes per week</td><td>50 minutes per class · maximum 5 students</td></tr>
+            <tr><td>One-to-one</td><td>2 classes per week</td><td>50 minutes per class · personalised coaching</td></tr>
+            <tr><td>Free assessment</td><td>One session</td><td>Understand the child's current chess level</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note">Interested in joining? <a href="https://wa.me/916232881878?text=Hi%2C%20I%20would%20like%20to%20know%20the%20class%20schedule%20and%20fees%20for%20chess%20coaching.">Message Shubham on WhatsApp</a> for class schedules and fee details.</p>
+    </div>
+  </section>
+
+  <section class="block" id="guides">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Guides for parents</span>
+        <h2>Three questions parents ask before the first class</h2>
+      </div>
+      <div class="guides">
+        <a class="gcard" href="guides/right-age-to-start-chess.html"><span class="eyebrow">Guide</span><h3>What is the right age to start chess?</h3><p>What a four-year-old can learn, what changes at seven, and the signs a child is ready.</p></a>
+        <a class="gcard" href="guides/what-happens-in-the-first-chess-class.html"><span class="eyebrow">Guide</span><h3>What happens in a first online chess class?</h3><p>The setup you need, how the assessment runs, and what the coach is looking for.</p></a>
+        <a class="gcard" href="guides/how-to-choose-an-online-chess-coach.html"><span class="eyebrow">Guide</span><h3>How to choose an online chess coach</h3><p>Seven things to check, from verifiable ratings to group size, before you pay for a month.</p></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="faq">
+    <div class="wrap">
+      <div class="head">
+        <span class="eyebrow">Questions parents ask</span>
+        <h2>Before You Book</h2>
+      </div>
+      <div class="faq">
+        <details open><summary>What do we need for an online chess class?</summary><p>A laptop or tablet with a camera, a stable internet connection, and a quiet place to learn. Classes are conducted through Zoom or Google Meet. We use platforms like Lichess and Chess.com for practice and interactive learning.</p></details>
+        <details><summary>My child has never played chess. Is that fine?</summary><p>Absolutely! Beginners are welcome. We start with the basics, including piece movements, chess rules, and simple tactics, and gradually build their skills.</p></details>
+        <details><summary>What happens if we miss a class?</summary><p>Please inform me at least 3–4 hours before the scheduled class if your child cannot attend. Make-up classes can be discussed based on availability. Last-minute cancellations and no-shows may not qualify for a make-up class.</p></details>
+        <details><summary>What ages do you teach?</summary><p>I teach children aged 4–15, from complete beginners to intermediate-level players. Classes are available in English and Hindi.</p></details>
+        <details><summary>We live outside India. Can our child join?</summary><p>Absolutely! I welcome students from around the world. Classes are conducted online, and timings can be arranged according to mutual availability across different time zones.</p></details>
+        <details><summary>How are students grouped?</summary><p>Students are grouped according to their age, playing strength, and learning level to ensure an effective learning experience. Small groups have a maximum of 5 students.</p></details>
+        <details><summary>Do you provide learning materials?</summary><p>Yes! Students receive practice puzzles, worksheets, lesson materials, and homework to reinforce what they learn in class.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <section class="contact" id="demo">
+    <div class="wrap">
+      <div class="contact-copy">
+        <span class="eyebrow">Free assessment class</span>
+        <h2>Book a free assessment on WhatsApp</h2>
+        <p class="lede">Send your child's age and whether they have played before. Shubham replies with a time slot. The assessment is one live class that shows where your child stands and which level fits. Assessment slots are limited.</p>
+        <form class="demo-form" id="demo-form">
+          <div class="field"><label for="df-name">Child's first name</label><input id="df-name" name="name" type="text" autocomplete="off" placeholder="e.g. Aarav"></div>
+          <div class="field"><label for="df-age">Age</label><input id="df-age" name="age" type="number" min="4" max="15" inputmode="numeric" placeholder="4 to 15"></div>
+          <div class="field"><label for="df-exp">Played before?</label><select id="df-exp" name="exp"><option>Never</option><option>Knows the moves</option><option>Plays regularly</option><option>Plays tournaments</option></select></div>
+          <div class="field"><label for="df-time">Preferred time</label><select id="df-time" name="time"><option>Weekday evenings</option><option>Weekday mornings</option><option>Weekends</option><option>Flexible</option></select></div>
+          <button class="btn primary" type="submit" data-loc="form">Message on WhatsApp</button>
+          <p class="note" style="margin-top:4px">This opens WhatsApp with your message ready to send. Nothing is stored on this site.</p>
+        </form>
+      </div>
+      <dl class="ways">
+        <div><dt>WhatsApp</dt><dd><a href="https://wa.me/916232881878" target="_blank" rel="noopener" data-loc="contact">+91 62328 81878</a></dd></div>
+        <div><dt>Call</dt><dd><a href="tel:+916232881878" data-loc="contact">+91 62328 81878</a></dd></div>
+        <div><dt>Instagram</dt><dd><a href="https://www.instagram.com/shubhamsinghchess/" target="_blank" rel="noopener">@shubhamsinghchess</a></dd></div>
+        <div><dt>Timings</dt><dd>Arranged by mutual availability, across time zones</dd></div>
+        <div><dt>Classes on</dt><dd>Zoom or Google Meet · Lichess and Chess.com for practice</dd></div>
+      </dl>
+    </div>
+  </section>
+</main>
+
+<a class="wa-float" href="https://wa.me/916232881878?text=Hi%2C%20I%20would%20like%20to%20book%20a%20free%20chess%20assessment%20class%20for%20my%20child." target="_blank" rel="noopener" aria-label="Chat on WhatsApp" data-loc="float">
+  <svg viewBox="0 0 32 32" width="28" height="28" aria-hidden="true"><path fill="currentColor" d="M16 3C9.4 3 4 8.3 4 14.9c0 2.3.7 4.5 1.9 6.4L4 29l7.9-1.9c1.8 1 3.9 1.5 6.1 1.5 6.6 0 12-5.3 12-11.9S22.6 3 16 3zm0 21.7c-1.9 0-3.8-.5-5.4-1.5l-.4-.2-4.7 1.1 1.2-4.5-.3-.4A9.6 9.6 0 0 1 6.1 15c0-5.4 4.4-9.8 9.9-9.8s9.9 4.4 9.9 9.8-4.4 9.7-9.9 9.7zm5.4-7.3c-.3-.1-1.8-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.8 1-1 1.2-.2.2-.3.2-.6.1-.3-.1-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.4-.5c.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.8-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.2-.3-.3-.5-.4z"/></svg>
+</a>
+
+<footer class="site"><div class="wrap">© 2026 Shubham Chess Academy · <a href="https://www.instagram.com/shubhamsinghchess/" target="_blank" rel="noopener">Instagram</a></div></footer>
+
+<script async src="https://www.instagram.com/embed.js"></script>
+<script>
+(function () {
+  // Back-rank mate: 1. Re8#
+  var START = {
+    a7: "bp", f7: "bp", g7: "bp", h7: "bp", g8: "bk", c6: "bn", b2: "br",
+    a2: "wp", f2: "wp", g2: "wp", h2: "wp", g1: "wk", e1: "wr", f3: "wn"
+  };
+  var GLYPH = { k: "♚", q: "♛", r: "♜", b: "♝", n: "♞", p: "♟" };
+  var NAME = { k: "king", q: "queen", r: "rook", b: "bishop", n: "knight", p: "pawn" };
+  var FILES = "abcdefgh";
+  var board = document.getElementById("board");
+  var msg = document.getElementById("pz-msg");
+  var pos, picked, solved;
+
+  function draw(last) {
+    board.textContent = "";
+    for (var r = 8; r >= 1; r--) {
+      for (var f = 0; f < 8; f++) {
+        var id = FILES[f] + r, pc = pos[id];
+        var b = document.createElement("button");
+        b.type = "button";
+        b.id = "sq-" + id;
+        b.dataset.sq = id;
+        b.className = "sq " + ((f + r) % 2 === 0 ? "l" : "d");
+        if (pc) {
+          b.textContent = GLYPH[pc[1]] + "︎";
+          b.classList.add(pc[0]);
+        }
+        b.setAttribute("aria-label", id + (pc ? ", " + (pc[0] === "w" ? "white " : "black ") + NAME[pc[1]] : ", empty"));
+        if (id === picked) b.classList.add("pick");
+        if (last && (id === last[0] || id === last[1])) b.classList.add("last");
+        if (solved && id === "g8") b.classList.add("mated");
+        board.appendChild(b);
+      }
+    }
+  }
+  function reset() {
+    pos = Object.assign({}, START); picked = null; solved = false;
+    msg.textContent = "Tap a white piece, then tap the square it should go to.";
+    draw();
+  }
+  function solve() {
+    pos = Object.assign({}, START); delete pos.e1; pos.e8 = "wr";
+    picked = null; solved = true;
+    msg.innerHTML = "<b>1. Re8#</b> Checkmate. The king is trapped behind its own pawns, and nothing can capture the rook or block on f8. This back-rank mate is one of the first patterns a beginner learns.";
+    draw(["e1", "e8"]);
+  }
+  board.addEventListener("click", function (e) {
+    var t = e.target.closest(".sq");
+    if (!t || solved) return;
+    var id = t.dataset.sq, pc = pos[id];
+    if (pc && pc[0] === "w") {
+      picked = id; draw();
+      msg.textContent = "Now tap where the " + NAME[pc[1]] + " should go.";
+    } else if (picked) {
+      if (picked === "e1" && id === "e8") { solve(); }
+      else {
+        picked = null; draw();
+        msg.textContent = "That is not checkmate. Look at where the black king can run. Try again.";
+      }
+    } else {
+      msg.textContent = "It is White's move. Tap a white piece first.";
+    }
+    var again = document.getElementById("sq-" + id);
+    if (again) again.focus({ preventScroll: true });
+  });
+  document.getElementById("pz-show").addEventListener("click", solve);
+  // --- item 28: contact click events (no-op until GA4 is enabled) ---
+  document.addEventListener("click", function (e) {
+    var a = e.target.closest('a[href^="https://wa.me"], a[href^="tel:"], a[download]');
+    if (!a || typeof window.gtag !== "function") return;
+    var method = a.href.indexOf("tel:") === 0 ? "phone" : (a.hasAttribute("download") ? "download" : "whatsapp");
+    window.gtag("event", "contact_click", { method: method, location: a.dataset.loc || "" });
+  });
+  // --- item 15: level picker ---
+  var LEVELS = [
+    ["Beginner", "Starts from how the pieces move and the first checkmates. Most children aged 4 to 8 begin here."],
+    ["Intermediate", "Your child knows the moves and some mates. This level builds tactics, a small opening repertoire and endgame basics."],
+    ["Tournament", "Your child already plays competitively. One-to-one work on openings, planning and reviewing their own games."]
+  ];
+  var pform = document.getElementById("picker-form");
+  pform.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var fd = new FormData(pform);
+    var score = (+fd.get("exp")) + (+fd.get("skill")) + (+fd.get("rating"));
+    var idx = score <= 1 ? 0 : (score <= 4 ? 1 : 2);
+    if (+fd.get("exp") === 2 && +fd.get("rating") === 2) idx = 2;
+    var lv = LEVELS[idx];
+    document.getElementById("picker-level").textContent = lv[0];
+    document.getElementById("picker-why").textContent = lv[1];
+    var labels = { exp: ["never played", "knows the moves", "plays in tournaments"], skill: ["not sure about K+Q mate", "can mate with K+Q", "spots forks and pins"], rating: ["no online rating", "online rating under 1000", "online rating 1000+"] };
+    var text = "Hi, I would like to book a free chess assessment class for my child. Your level quiz suggested " + lv[0] + " (" + labels.exp[+fd.get("exp")] + ", " + labels.skill[+fd.get("skill")] + ", " + labels.rating[+fd.get("rating")] + ").";
+    document.getElementById("picker-wa").href = "https://wa.me/916232881878?text=" + encodeURIComponent(text);
+    var r = document.getElementById("picker-result"); r.hidden = false; r.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  });
+  // --- item 16: WhatsApp-composed demo form ---
+  var dform = document.getElementById("demo-form");
+  dform.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var fd = new FormData(dform);
+    var name = (fd.get("name") || "").toString().trim(), age = (fd.get("age") || "").toString().trim();
+    var text = "Hi, I would like to book a free chess assessment class" + (name ? " for " + name : " for my child") + (age ? " (age " + age + ")" : "") + ". " + fd.get("exp") + " before. Preferred time: " + fd.get("time") + ".";
+    window.open("https://wa.me/916232881878?text=" + encodeURIComponent(text), "_blank", "noopener");
+  });
+  // --- items 19/20: time-zone helper ---
+  (function () {
+    var out = document.getElementById("tz-out"), now = document.getElementById("tz-now"), sel = document.getElementById("tz-ist");
+    var tz; try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone; } catch (err) { tz = null; }
+    function fmt(d, zone) { return new Intl.DateTimeFormat(undefined, { hour: "numeric", minute: "2-digit", timeZone: zone }).format(d); }
+    function dayWord(d, zone) { var w = new Intl.DateTimeFormat("en", { weekday: "short", timeZone: zone }).format(d); return w; }
+    function render() {
+      var d = new Date();
+      if (!tz || tz === "Asia/Kolkata" || tz === "Asia/Calcutta") {
+        now.textContent = "You seem to be in India, so the windows above are already your local time.";
+        out.textContent = ""; sel.parentNode.querySelector("label").hidden = true; sel.hidden = true; return;
+      }
+      now.textContent = "Right now it is " + fmt(d, tz) + " where you are (" + tz.replace(/_/g, " ") + ") and " + fmt(d, "Asia/Kolkata") + " in India.";
+      // build a date at the chosen IST hour today, then show it in the visitor's zone
+      var h = +sel.value;
+      var istParts = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kolkata", year: "numeric", month: "2-digit", day: "2-digit" }).format(d);
+      var utc = new Date(istParts + "T" + String(h).padStart(2, "0") + ":00:00+05:30");
+      out.innerHTML = "<b>" + sel.options[sel.selectedIndex].text + "</b> is <b>" + fmt(utc, tz) + "</b> " + (dayWord(utc, tz) === dayWord(utc, "Asia/Kolkata") ? "the same day" : "on " + dayWord(utc, tz)) + " for you.";
+    }
+    sel.addEventListener("change", render); render();
+  })();
+  document.getElementById("pz-reset").addEventListener("click", reset);
+  reset();
+})();
+</script>
+</body>
+</html>
