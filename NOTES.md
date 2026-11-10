@@ -6,16 +6,14 @@ Picked 2026-10-02. Tracking lives in Life OS:
 radar `p:proj-shubham-chess-site`.
 
 ## Built 2026-11-09 from the 20-site survey (items numbered as in the list given to Akash)
-- 12 floating WhatsApp button on every page · 13 `tel:` call link · 14 stats strip (1738 /
-  100+ / 3 / 2+ / 5) · 15 three-question level picker → WhatsApp message with the answers ·
+- 12 floating WhatsApp button on every page · 13 `tel:` call link · 14 stats strip (built
+  11-09, removed 11-10 at Akash's request) · 15 three-question level picker → WhatsApp message with the answers ·
   16 demo "form" that composes a WhatsApp message (nothing stored) · 18 four-step "How to
-  join" · 19+20 Timings section with a time-zone helper (visitor's zone vs IST; hides itself
-  for Indian visitors) — **windows are `.ph` until Shubham gives them** · 21 Lichess monthly
-  arena card — **team link is `.ph`** · 22 `downloads/starter-puzzles.pdf` (10 mate-in-one,
+  join" · 19+20 Timings section + time-zone helper — built 11-09, **removed 11-10 at Akash's request** · 21 Lichess monthly
+  arena card — team https://lichess.org/team/shubham7879 (linked 11-11) · 22 `downloads/starter-puzzles.pdf` (10 mate-in-one,
   each verified with python-chess; source HTML in the session scratchpad, regenerate with
   Chrome `--print-to-pdf`) · 24 folded into join step 4 ("note to parents on what to
-  practise" — from the Oct draft, **confirm with Shubham**) · 25 gallery (his photo, student
-  photo, poster) · 26 three guide pages in `guides/` (Claude's copy, parent-facing, bylined
+  practise" — from the Oct draft, **confirm with Shubham**) · 25 gallery (built 11-09, removed 11-10) · 26 three guide pages in `guides/` (Claude's copy, parent-facing, bylined
   Shubham — **he should read them once**) · 27 OG image, canonical, hreflang, JSON-LD
   (Person + EducationalOrganization + Service + Article), sitemap.xml, robots.txt ·
   28 GA4 LIVE (`G-JBH3RL4PTN`, 2026-11-09, Shubham's Google account; the GTM container
@@ -72,16 +70,35 @@ All now used on the page. Photo: `site/shubham.jpg` is cropped from the poster (
 - 2+ years of online coaching · ages 4–15 · classes in English **and Hindi** (FAQ, 11-09) · students worldwide
 - Live 1-on-1 and small group · structured curriculum · weekly homework and assessments
 - Teaches: opening principles, tactical training, endgame techniques, tournament preparation
-- Bio in his own words (Akash supplied 2026-11-09, on the page verbatim): "My chess journey
+- Bio in his own words (Akash supplied 2026-11-09; **removed from the page 2026-11-10 at his
+  request** — kept here only as source): "My chess journey
   began when my elder brother introduced me to the game. Through self-learning and practice,
   I developed my skills and eventually became a coach. I love helping children improve their
   chess skills, think independently, and enjoy learning."
 - Call to action is a **free assessment class** (his wording, not "demo")
-- Enquiries: WhatsApp +91 62328 81878 (public on his profile); the draft's button uses
-  `https://wa.me/916232881878` with a pre-typed message
+- Enquiries: **WhatsApp Business +91 82238 20430** (Akash, 2026-11-10) — every wa.me link,
+  the tel: link, JSON-LD and the PDF footer use it. The poster's +91 62328 81878 is
+  superseded (still printed on the Instagram poster image in `assets/`).
 - Reel topics used in the "Free lessons" section: Chess for beginners part 1, Philidor
   Position, Lucena Position, isolated pawn, passed pawn, King's Indian Defence, Greek Gift
   sacrifice, X-ray attack, discovered attack, attackers vs defenders, how to stop castling
+
+## Second coach — Soundariya Laxmi (from Akash, 2026-11-10; text verbatim on the page)
+"Soundariya Laxmi is a FIDE-rated chess player with a rating of 1580 and has represented her
+country at the Commonwealth Chess Championship. She brings competitive experience and a
+passion for chess, helping students develop their skills and confidence." Photo
+`site/soundariya.jpg` cropped from `assets/soundariya-original.png`. **The supplied image
+looks AI-generated, not a photograph of her** — flagged to Akash; swap for a real photo
+when available. No FIDE ID given yet (ask, so it can be linked like Shubham's). Hindi bio
+is Claude's translation. Section is now "Meet our coaches"; all three badged plain "Coach" (Head coach dropped 11-10).
+
+## Third coach — Sanjay Bhardwaj (Akash, 2026-11-10; bio verbatim on the page)
+"A FIDE-rated chess player [FIDE rating 1637] with 3+ years of coaching experience. He has
+represented his university five times at the All India University Chess Championship and
+secured Runner-Up in 2022–23. With 120+ tournaments played, he brings strong competitive
+experience to his coaching." Photo `site/sanjay-card.jpg` cropped 4:3 from the portrait
+Akash sent (`assets/sanjay-original.png`; looks AI-styled, used as given). The earlier
+screenshot crop was discarded. No FIDE ID yet.
 
 ## Student results (from Shubham via Akash, 2026-11-09)
 - Slot 1: 3rd place, Commonwealth Schools Chess Championship 2026, Under-7 Girls (Rapid),
@@ -90,8 +107,9 @@ All now used on the page. Photo: `site/shubham.jpg` is cropped from the poster (
   cropped above the name tag. Permission is Akash's/Shubham's responsibility, not confirmed
   in writing here. Original at `assets/student-result-1-NOT-FOR-SITE.png` (name tag visible).
 - Slot 2: reel https://www.instagram.com/p/DbjTZAKuyDX/ (Akash, 2026-11-09) — his teaching approach: "I understand the
-  student first, then teach them." Embedded with Instagram's official `embed.js`
-  (client-side, static-safe) with a plain link fallback. Caption copy is Claude's paraphrase
+  student first, then teach them." Was an Instagram embed; since 2026-11-10 self-hosted at
+  `site/media/understand-the-student-first.mp4` (+ .jpg poster) because the embed's
+  like/comment chrome could not be hidden. Re-fetch: `yt-dlp -f "b[height<=720]" <url>`. Caption copy is Claude's paraphrase
   of that one line; confirm with him.
 - Slots 3–4: two 5/5 parent reviews from his coaching-platform profile (Akash's screenshot,
   2026-11-09; source platform not named — the 4.79/689 rating in the corner is the
@@ -100,7 +118,8 @@ All now used on the page. Photo: `site/shubham.jpg` is cropped from the poster (
   (23 Mar 2026) and Priyanka J (26 Aug 2026). Results grid is now 2×2.
 
 ## Class plans (from Shubham via Akash, 2026-11-09)
-- Small group: 2 classes/week · 50 min · max 5 students. One-to-one: 2 classes/week · 50 min.
+- Small group: 2 classes/week · 50 min · max 5 students. **Pair (1 coach : 2 students)** — added
+  by Akash 2026-11-10, same cadence assumed. One-to-one: 2 classes/week · 50 min.
   Free assessment: one session. **Fees not published** — the section ends with "Contact me
   for class schedules and fee details" (his wording), linked to WhatsApp.
 
@@ -127,6 +146,14 @@ ratings of 1750–1850, "W vs. Magnus A.", a 2025 tournament schedule. None of t
 Instagram (Arena International Master, state champion). `LIVE/shubhamProfileV1` is an earlier
 Flask version. Open decision for Akash/Shubham: replace that page with the new site, and
 whether the new site lives on shubham.akashs.com (free, already wired) or a new domain.
+
+## TalentGum review (2026-11-10)
+Akash asked what to add/remove vs talentgum.com's chess page. Added: quick-jump bar under
+the hero, "What your child gets" six benefit cards (all from his FAQ), learning map per
+level (replaces rating-band placeholders). Not copied: prices/EMI/discounts, unverifiable
+counts, press logos, FIDE-title promises, OTP booking/dashboard (server). Asked Shubham via
+Akash for 4 more FAQ answers: mid-way join, fees & holidays, what the assessment includes,
+which tournaments students play.
 
 ## Competitor survey (2026-11-09)
 `research/competitor-survey-2026-11-09.md` — 20 academy sites, what they share, what is rare,

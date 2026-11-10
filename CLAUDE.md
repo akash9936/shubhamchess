@@ -12,6 +12,7 @@ shubham-chess-site/
 ├── CLAUDE.md            ← this file: how to work here + Style Contract + Feedback Log
 ├── NOTES.md             ← facts about Shubham and their source, vendor check, hosting plan
 ├── research/            ← competitor survey (20 sites, 2026-11-09)
+├── docs/                ← plans for future work (student portal)
 ├── assets/              ← source material (poster, original photos); NOT deployed
 ├── site/                ← THE DEPLOYABLE ROOT. Static, no build step.
 │   ├── index.html       ← English home page (JS inline: puzzle, level picker, demo form, tz helper)
@@ -20,6 +21,7 @@ shubham-chess-site/
 │   ├── guides/*.html    ← three parent guides (static articles)
 │   ├── instagram/index.html  ← static redirect → his Instagram
 │   ├── downloads/starter-puzzles.pdf  ← lead magnet; rebuilt from scratchpad HTML via Chrome --print-to-pdf
+│   ├── media/           ← self-hosted reels (mp4 + poster jpg)
 │   ├── og.png · favicon.svg · shubham.jpg · result-commonwealth-2026.jpg · poster.jpg
 │   └── sitemap.xml · robots.txt   (CNAME to be added at deploy)
 └── draft/review-draft.html  ← the 2026-10-02 artifact body the site was cut from (frozen)
@@ -61,14 +63,16 @@ a `.ph` but is a guess (levels, rating bands, class structure) is also listed th
 
 ## Hosting: GitHub Pages, static only — a hard rule (Akash, 2026-11-09)
 
-- The site runs **free on GitHub Pages**. There is **no server**, ever: no backend, no
-  serverless functions, no database, no cron, no build step that needs a host.
-- **If Akash asks for a feature that needs a server, decline it** and say exactly:
-  *"we need to run a server for this"*, then offer the nearest static alternative if one
-  exists (a `mailto:`/WhatsApp link instead of a contact form, a third-party embed instead
-  of a stored record, GA4 instead of self-hosted analytics). Needs-a-server features
-  include: form submissions stored anywhere, logins, payments, bookings with a calendar
-  backend, uploads, anything that reads or writes data on request.
+- The site runs **free on GitHub Pages**. We **operate no server**: nothing to install,
+  patch, restart or pay for. Clarified 2026-11-10: a **managed, free-tier backend that
+  Google runs (Firebase Auth + Firestore, Spark plan, no Cloud Functions)** is allowed —
+  Akash's words were "I do not want to *run* any server", and Firebase is a server Google
+  runs. Anything we would have to host ourselves (a VPS, a container, a cron box) is still out.
+- **If Akash asks for a feature that needs a server we would run, decline it** and say:
+  *"we need to run a server for this"*, then offer the nearest alternative: static first
+  (a WhatsApp link instead of a form, an embed instead of a stored record, GA4), then
+  Firebase if it genuinely needs login or stored data. The student portal
+  (`docs/student-portal-plan.md`) is the first Firebase feature, planned, not started.
 - Allowed: anything that runs in the visitor's browser from static files — HTML, CSS, JS,
   `localStorage`, links out to WhatsApp / Instagram / Google Forms / Calendly, and
   third-party scripts loaded client-side (GA4).
@@ -79,13 +83,28 @@ a `.ph` but is a guess (levels, rating bands, class structure) is also listed th
 
 The rules the page is written to. Feedback from Akash changes this list, never just the HTML.
 
+- **Three coaches, so the academy is "we" / "our coaches"**, never "he" (11-10). Shubham
+  by name only where the fact is his alone (WhatsApp replies, the free assessment).
+- **Three coaches, so the academy is "we" / "our coaches"**, never "he" (11-10). Shubham
+  by name only where the fact is his alone (WhatsApp replies, the free assessment, his reels).
+- **Levels are a learning map**: each level card = who it is for (italic line) + six topics in
+  teaching order + a meta row "Placed by the free assessment". No rating bands, no durations,
+  no "3 months" promises. New topics go in order, not appended.
 - **Audience is a parent, not a chess player.** Plain words; chess terms only where the
   page explains them (the puzzle, the lesson topics).
-- **One call to action**: the free assessment class, via WhatsApp. Every primary button goes
-  to `#demo`; nothing else competes with it. No forms, logins or payments.
-- **No prices on the page.** The class-plans table shows format, frequency, length and group
-  size; fees are asked for on WhatsApp (Shubham's wording: "Contact me for class schedules
-  and fee details"). Don't add a fee column back unless he sends prices.
+- **The contact number is the WhatsApp Business line +91 82238 20430** (since 11-10). It is
+  the only number on the site: wa.me links, tel: link, JSON-LD, PDF footer. Change it with
+  one grep across `site/` and the puzzle sheet source, then regenerate the PDF.
+- **One call to action**: the free assessment class. Every "book" button (header, hero, plan
+  card, coach cards, guides, picker result aside) goes to `#demo`, the contact form, which
+  composes the WhatsApp message from the child's details; the first field is focused on
+  arrival. Direct wa.me links remain only on the floating button, the contact-block number
+  and the lessons/plans sub-line. No stored forms, logins or payments.
+- **No prices on the page.** The class-plans section is four **pricing-style cards without
+  prices** (Small group 1:5 · Pair 1:2 · One-to-one 1:1 · Free assessment) (`.plans` → `article.plan`: badge, name, sub-line, "What's included" checklist,
+  no buttons on the paid cards; the only button in the section is on the fourth card, the
+  free assessment itself — Akash removed the per-card buttons 11-10). One-to-one is `.featured`. Every bullet comes from his FAQ / class
+  plans; no EMI, discounts, "save X%" or session counts we have not been given.
 - **Every page has the floating WhatsApp button** (`.wa-float`) and a `tel:` link next to
   the WhatsApp number. Clicks on wa.me / tel: / download links fire a GA4 `contact_click`
   event (property `G-JBH3RL4PTN`, loaded via gtag.js in every page's `<head>`). A new
@@ -97,9 +116,19 @@ The rules the page is written to. Feedback from Akash changes this list, never j
   is linked wherever it is named: header nav, hero facts, lessons section, contact, footer.
   Always `target="_blank" rel="noopener"`. `<domain>/instagram` is a static redirect to it;
   more such short links go in `site/<name>/index.html` the same way (meta refresh + JS).
-  A reel or post he wants shown is embedded with Instagram's official `embed.js`
-  (`blockquote.instagram-media`, one script tag before the page script) plus a plain link
-  fallback, never downloaded and re-hosted.
+  A reel he wants shown is **self-hosted** as an mp4 in `site/media/` (≤720p, a few MB,
+  his own content) with a poster frame and a `<video controls playsinline>` tag, plus a
+  "Watch on Instagram" link. Instagram's `embed.js` is NOT used: Akash wants only the video,
+  and the embed's like/comment/"View more" chrome cannot be removed (2026-11-10).
+- **Coaches section** (`#coach`, heading "Meet our coaches", no sub-line) is a
+  **continuously sliding strip** (`.coaches-marquee` → `.coaches-track` → `article.ccard`,
+  the three cards followed by an `aria-hidden` copy so the CSS loop is seamless; pauses on
+  hover/focus; reduced-motion users get a static swipeable row). Each card: 4:3 photo on top with a `.badge` that reads "Coach" for everyone (no Head coach rank, 11-10), name + short `.tag`, one short
+  paragraph (bio verbatim; no personal quotes — Akash removed Shubham's 11-10), `.chips` for credentials, and a "Free assessment class"
+  WhatsApp link at the foot. Akash chose this over the stacked bio layout (2026-11-10, after
+  seeing a tutor-card reference). Card photos are `site/<name>-card.jpg` (900×675). Mirror on
+  `hi/`. Intro video (item 23), when it exists, goes in Shubham's card in place of the photo.
+  Flag once if a supplied portrait looks generated, then use it.
 - **Shubham's voice, Shubham's facts.** Credentials only as he states them; "AIM is awarded by
   FIDE Online Arena" is the one line of Claude's wording still to be confirmed by him.
 - **No dependencies** except Google Fonts and Instagram's embed script. Must render fine if
@@ -202,3 +231,91 @@ When Akash gives feedback on the site, the copy, the design, or how this project
   (`GTM-5T7NTCNJ`) embeds GA4 property `G-JBH3RL4PTN`; wired gtag.js with that ID into all
   five pages instead of GTM (fewer moving parts, and our `gtag('event')` calls work as is).
   Rule: analytics = GA4 via gtag.js, one property, no Tag Manager layer.
+- 2026-11-10 — Akash: "we can use Firebase without running a server, right?" then the
+  portal design (coach schedules classes + link, students log in by ID, join). → Hosting
+  rule rewritten: no server *we run*; managed free-tier Firebase allowed. Design agreed
+  with three changes (coach = Google sign-in, student ID = generated access code, series →
+  per-session rows) and parked in `docs/student-portal-plan.md`. Not started, on his word.
+- 2026-11-10 — Akash, on the reel card: remove the like / comment / "View more on
+  Instagram" rows, keep just the video. → Instagram embed replaced by a self-hosted mp4
+  (`media/understand-the-student-first.mp4`, 360×640, 1.6 MB, fetched with yt-dlp) with a
+  poster frame, on EN and HI; `embed.js` dropped. Instagram rule rewritten accordingly.
+- 2026-11-10 — Akash: turn "Your coach" into "Meet our coaches" and add Soundariya Laxmi
+  (photo + bio supplied). → Section reheaded on EN + HI, Shubham tagged Head coach, second
+  coach block added with creds (FIDE 1580, Commonwealth Chess Championship); nav label
+  "Coaches". Portrait looks AI-generated — said so once, used it. Style Contract gained
+  the coaches-section pattern.
+- 2026-11-10 — Akash: "no, I want it like this" (tutor-card grid reference: photo top with
+  a badge, name, short bio, demo link). → Coaches section rebuilt as `.ccard` grid on EN +
+  HI with 4:3 photos, role badges, credential chips and a WhatsApp CTA per card; the
+  stacked bio layout from an hour earlier dropped. Rule updated.
+- 2026-11-10 — Akash sent a third coach's bio (FIDE 1637, 3+ yrs, AIU runner-up 2022–23,
+  120+ tournaments) with the same tutor-card screenshot. → Third `.ccard` added on EN + HI,
+  photo cropped from the screenshot's second card, name left as `.ph` (none given);
+  section now "Three coaches". Flagged once that the photo is labelled as another
+  academy's maths coach on its source page.
+- 2026-11-10 — Akash: name is Sanjay Bhardwaj, use this portrait. → Name filled on EN + HI,
+  photo replaced with `sanjay-card.jpg` (the screenshot crop deleted).
+- 2026-11-10 — Akash: remove Shubham's "my chess journey" quote and the Head coach badge.
+  → Both removed on EN + HI; all three cards now badge "Coach". Coaches rule updated.
+- 2026-11-10 — Akash: drop the "Three coaches, one way of teaching" heading + sub-line, and
+  make the cards move continuously side by side. → Heading is now just "Meet our coaches";
+  cards sit in a CSS marquee (duplicated set, 36 s loop, pause on hover, reduced-motion
+  fallback) on EN + HI. Rule updated.
+- 2026-11-10 — Akash: remove "See how he teaches before you book" and do something better.
+  → Lessons section reheaded "One idea per lesson, free on Instagram" with a coach-neutral
+  lede, every topic chip now a link (play glyph) to the Instagram profile, button reads
+  "Follow @shubhamsinghchess". Same on HI. Rule: copy must not say "he" for the academy
+  now that there are three coaches.
+- 2026-11-10 — Akash: remove "See how he teaches before you book" and do something better.
+  → Lessons section (EN only; HI never had it) reheaded "One idea per lesson, free on
+  Instagram" with a coach-neutral lede, every topic chip now a link with a play glyph to the
+  Instagram profile, button "Follow @shubhamsinghchess". Hero lede on EN + HI now says
+  "FIDE-rated coaches led by Shubham Singh". Rule added: academy copy is "we", not "he".
+- 2026-11-10 — Akash: "fix this" on the timings section showing two amber placeholders. →
+  Placeholders replaced with rows derived from his FAQ and class plans (slots by mutual
+  availability, 50 min twice a week, IST matched abroad); lede rewritten in "we" voice.
+  Rule: a `.ph` that has waited more than a day gets replaced with honest general copy from
+  facts already on the page, not left visible on the live site.
+- 2026-11-10 — Akash sent a pricing-card reference ("do like this … I just don't want price
+  to be shown"). → Plans table replaced by three cards on EN + HI (Small group / One-to-one
+  featured / Free assessment), checklists from his FAQ and plans, two WhatsApp buttons each,
+  no prices. No-prices rule rewritten to describe the card pattern.
+- 2026-11-10 — Akash: there is also a one-coach-two-students format. → "Pair" card added
+  between Small group and One-to-one on EN + HI; grid now 4 / 2 / 1 columns.
+- 2026-11-10 — Akash: remove the Timings section, not necessary. → Section, nav link, the
+  time-zone helper JS and its CSS removed from EN (HI never had it). Items 19/20 from the
+  survey list are therefore dropped, not pending.
+- 2026-11-10 — Akash: "do as you suggest" after the TalentGum comparison. → Quick-jump pill
+  bar under the hero, six "What your child gets" cards, and level cards rebuilt as a
+  topic-ordered learning map (rating-band `.ph`s gone) on EN + HI. Rule added for levels.
+- 2026-11-10 — Akash, on the jump bar: "do you think it's needed?" → Kept for phones only
+  (≤760 px, where the header nav is hidden); hidden on desktop where it duplicated the
+  header. Rule: never show two navigations on one screen.
+- 2026-11-10 — Akash: remove the stats strip (1738 / 100+ / 3 / 2+ / 5). → Removed on EN +
+  HI with its CSS. Survey item 14 is dropped; the numbers still live in the coach cards.
+- 2026-11-10 — Akash: remove the gallery. → Section + CSS removed on EN (HI never had it).
+  `poster.jpg` is now unreferenced by pages (kept: OG image source); `shubham.jpg` (4:5) is
+  still used by `og.png` generation only. Survey item 25 dropped.
+- 2026-11-10 — Akash: +91 82238 20430 is the WhatsApp Business number. → Replaced the old
+  number in all 5 pages (45 occurrences: wa.me, displayed number, tel:, JSON-LD), the
+  puzzle PDF regenerated with the new footer. Call link also points at the business number.
+- 2026-11-10 — Akash: remove the "Ask for fees on WhatsApp" buttons. → Dropped from the
+  three paid plan cards on EN + HI; "Book a free assessment" promoted to the primary button.
+  The fee question still lives in the section's sub-line text.
+- 2026-11-10 — Akash: a "Book a free assessment" button under every plan is not needed. →
+  Buttons removed from the three paid cards on EN + HI; the Free assessment card keeps its
+  single "Book on WhatsApp" button. Rule: one CTA per section, on the thing it belongs to.
+- 2026-11-10 — Akash: "Book on WhatsApp" should open the page where they fill the child's
+  details. → All book buttons (free plan card, coach cards, guide CTA boxes) now go to the
+  `#demo` form; label "Book a free assessment"; scroll offset under the sticky header; first
+  field auto-focused. Floating button and contact links still open WhatsApp directly.
+- 2026-11-11 — Akash: Lichess team link is https://lichess.org/team/shubham7879. → "Join the
+  Lichess team" button on the practice card, EN + HI. Last `.ph` on the site is gone.
+- 2026-11-11 — Akash: the hero lede no longer makes sense with three coaches. → Rewritten
+  on EN + HI as an academy statement (ages, three formats, three FIDE-rated coaches, one
+  curriculum, weekly homework/assessments, free first class); meta + OG descriptions
+  updated to match. Headline "Learn to think first, then move." kept — it is the brand line
+  and is baked into og.png.
+- 2026-11-11 — Akash: remove "three" from the hero. → "FIDE-rated coaches" without a count, EN + HI + meta/OG descriptions. Rule: no coach count in copy, so adding or losing a coach needs no rewrite.
+- 2026-11-11 — Akash asked for a multi-persona review (8 personas, parallel) of where visitors drop before messaging. → Collated in `research/persona-review-2026-11-11.md`; ranked list given. No code changed yet — he decides.
