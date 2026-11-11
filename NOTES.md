@@ -115,6 +115,12 @@ screenshot crop was discarded. No FIDE ID yet.
   `site/media/understand-the-student-first.mp4` (+ .jpg poster) because the embed's
   like/comment chrome could not be hidden. Re-fetch: `yt-dlp -f "b[height<=720]" <url>`. Caption copy is Claude's paraphrase
   of that one line; confirm with him.
+- Lessons reel: https://www.instagram.com/p/DfmlVsWMY5Y/ (posted 2026-11-11; Akash asked to add it the same
+  day). Shubham shows his own win vs a 2250-rated player with the Greek Gift (Bxh7+), found because he had
+  solved the same pattern in a study ~5 years earlier. Self-hosted at `site/media/greek-gift-sacrifice.mp4`
+  (720×1280, 2.8 MB, 1:39) + poster at 0:54 (the sacrifice). Opponent rating 2250 confirmed by Akash 11-11;
+  Featured in `#lessons` (EN only; HI has no lessons section); the "Greek Gift sacrifice" chip links to it.
+  Delivery feedback given to Akash 11-11: 187 wpm avg (250–280 on the variations), 7× "okay", punchline last.
 - Slots 3–4: two 5/5 parent reviews from his coaching-platform profile (Akash's screenshot,
   2026-11-09; source platform not named — the 4.79/689 rating in the corner is the
   platform's, not his, and is NOT used). Quoted with the children's names replaced by
@@ -217,3 +223,4 @@ go-live step 1; not possible inside the artifact draft.
 - 2026-10-02 one static page with a WhatsApp CTA, no login/payments/student portal — he
   already teaches through online portals; a classroom platform is months of work and is
   what Chessido sells for ~₹12k/year.
+- Email: shubhamsinghchessacademy@gmail.com (Akash, 2026-11-11) — in every page footer.

@@ -34,6 +34,10 @@ shubham-chess-site/
   `styles.css?v=<yyyymmdd><letter>`; bump the version in all five pages whenever the CSS
   changes** (GitHub Pages caches it for 10 min and phones keep it longer: a stale sheet
   with new HTML looks like a broken deploy — 2026-11-11).
+- **Open the site when done (Akash, 2026-11-11).** After any change to `site/`, finish the turn by
+  opening the local page in his browser at the changed section:
+  `open "file://$PWD/site/index.html#<anchor>"` (or the changed page, e.g. `site/hi/index.html`).
+  Local, not the live URL: live lags until he pushes. Do it without being asked.
 - **Verify renders headless** (Chrome's minimum window is ~500 px, so phone checks go
   through a 390-px iframe wrapper — see NOTES.md "Verifying"). Check: tag balance, 64 `.sq`
   buttons in the dumped DOM (= JS ran), no element wider than the viewport, local links and
@@ -103,6 +107,8 @@ The rules the page is written to. Feedback from Akash changes this list, never j
 - **The contact number is the WhatsApp Business line +91 82238 20430** (since 11-10). It is
   the only number on the site: wa.me links, tel: link, JSON-LD, PDF footer. Change it with
   one grep across `site/` and the puzzle sheet source, then regenerate the PDF.
+  **Email: shubhamsinghchessacademy@gmail.com**, shown in the footer of every page with the
+  number (`mailto:` / `tel:` links, both `white-space: nowrap`) since 11-11.
 - **One call to action**: the free assessment class. Every "book" button (header, hero, plan
   card, coach cards, guides, picker result aside) goes to `#demo`, the contact form, which
   composes the WhatsApp message from the child's details; the first field is focused on
@@ -115,8 +121,9 @@ The rules the page is written to. Feedback from Akash changes this list, never j
   no buttons on the paid cards; the only button in the section is on the fourth card, the
   free assessment itself — Akash removed the per-card buttons 11-10). One-to-one is `.featured`. Every bullet comes from his FAQ / class
   plans; no EMI, discounts, "save X%" or session counts we have not been given.
-- **Every page has the floating WhatsApp button** (`.wa-float`) and a `tel:` link next to
-  the WhatsApp number. Clicks on wa.me / tel: / download links fire a GA4 `contact_click`
+- **Every page has the floating WhatsApp button** (`.wa-float`). The `tel:` link lives in the
+  footer only; the contact block (EN + HI) lists WhatsApp, Email, Instagram, Timings,
+  Classes on, with no separate Call row (Akash, 11-11). Clicks on wa.me / tel: / download links fire a GA4 `contact_click`
   event (property `G-JBH3RL4PTN`, loaded via gtag.js in every page's `<head>`). A new
   page must carry the same snippet; guide pages are the template.
 - **Hindi page mirrors the English one** for anything a parent decides on (hero, levels,
@@ -128,7 +135,11 @@ The rules the page is written to. Feedback from Akash changes this list, never j
   more such short links go in `site/<name>/index.html` the same way (meta refresh + JS).
   A reel he wants shown is **self-hosted** as an mp4 in `site/media/` (≤720p, a few MB,
   his own content) with a poster frame and a `<video controls playsinline>` tag, plus a
-  "Watch on Instagram" link. Instagram's `embed.js` is NOT used: Akash wants only the video,
+  "Watch on Instagram" link. A teaching reel (one chess idea) is featured at the top of
+  `#lessons` as `article.lesson-reel` (newest only; older ones go back to being chips); a
+  reel about how we teach sits in `#results`. **Every topic chip in `#lessons` links straight to its own
+  reel** (`instagram.com/reel/<code>/`, new tab), never the profile; a chip without a known reel
+  link falls back to the profile until Akash/Shubham supplies the link. Instagram's `embed.js` is NOT used: Akash wants only the video,
   and the embed's like/comment/"View more" chrome cannot be removed (2026-11-10).
 - **Coaches section** (`#coach`, heading "Meet our coaches", no sub-line) is a **one-at-a-time
   slider** (`#cslider` → `.cslides` → `article.cslide`, dots + arrows, swipe on touch,
@@ -409,3 +420,21 @@ When Akash gives feedback on the site, the copy, the design, or how this project
   labels, theme-color meta darkened. Texture dialled down after the first render looked
   loud; pills fixed to fit their text. Rule added.
 - 2026-11-11 — Akash: use "Shubham Chess Academy" everywhere. → Header brand, page titles, OG titles and guide headers on EN + HI switched; the old "Shubham Singh Chess" name is gone. Brand rule added.
+- 2026-11-11 — Akash: put the new reel (DfmlVsWMY5Y, Greek Gift / why puzzles matter) on the site; opponent rating corrected to 2250.
+  → Self-hosted mp4 + poster featured at the top of `#lessons` as a "Latest lesson" card
+  (video left, text right, stacks on phones); the "Greek Gift sacrifice" chip now jumps to it;
+  lede says "a minute or two" (this reel is 1:39). EN only (HI has no lessons section). CSS v=20261111p.
+  Rule: a lesson reel goes in `#lessons` as `.lesson-reel`; a reel about how we teach goes in `#results`.
+- 2026-11-11 — Akash: "always open website when u done doing". → Rule added under Layout: every
+  turn that changes `site/` ends by opening the local page at the changed section.
+- 2026-11-11 — Akash: clicking a lesson chip (Philidor, Lucena…) should open that exact reel on
+  Instagram. → Rule added; "Chess for beginners, part 1" → DcTwY4kOwKm and "Greek Gift sacrifice"
+  → DfmlVsWMY5Y (was jumping to the on-page card). The other 9 reels are hidden from logged-out
+  visitors (Instagram shows 12); links still owed, chips point at the profile until then.
+- 2026-11-11 — Akash: "at last add phone as my number only and gmail shubhamsinghchessacademy". →
+  Footer on all five pages now reads © · Instagram · +91 82238 20430 (tel:) ·
+  shubhamsinghchessacademy@gmail.com (mailto:). Reverses the 11-09 "remove email" for the footer
+  only; contact block unchanged. CSS v=20261111q (nowrap links, footer clears the WhatsApp float).
+- 2026-11-11 — Akash (screenshot of the contact block): add the email here too and remove the call
+  number. → "Call" row replaced by "Email" (mailto:) on EN + HI (ईमेल); tel: now only in the
+  footer. CSS v=20261111r (email may wrap on phones). Rule updated.

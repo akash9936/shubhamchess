@@ -628,3 +628,18 @@ section.block:nth-of-type(even) { background: transparent; }
 .hero-copy .eyebrow { align-self: center; }
 
 .cdot { background: color-mix(in srgb, var(--ink) 22%, transparent); width: 11px; height: 11px; }
+
+/* Featured lesson reel in #lessons (11-11): video left, text right; stacks on phones. */
+.lesson-reel { display: grid; grid-template-columns: minmax(0, 300px) minmax(0, 1fr); gap: 24px; align-items: center; margin: 0 0 28px; padding: 20px; background: var(--surface); border: 1px solid var(--line); border-left: 6px solid var(--violet); border-radius: var(--radius); box-shadow: var(--shadow); }
+.lesson-reel .reel { width: 100%; height: auto; max-height: 540px; display: block; background: #000; border-radius: 10px; object-fit: contain; }
+.lesson-reel .lr-body { display: flex; flex-direction: column; gap: 10px; align-items: flex-start; min-width: 0; }
+.lesson-reel h3 { margin: 0; }
+.lesson-reel p { margin: 0; }
+@media (max-width: 760px) { .lesson-reel { grid-template-columns: minmax(0, 1fr); padding: 16px; } .lesson-reel .reel { max-height: 480px; margin: 0 auto; } }
+
+/* Footer contact (11-11): keep the number and email whole; clear the floating WhatsApp button on phones. */
+footer.site a { white-space: nowrap; }
+footer.site .wrap { line-height: 1.9; }
+@media (max-width: 760px) { footer.site { padding-bottom: 96px; } }
+/* Contact block email (11-11): long address may break on narrow phones rather than overflow. */
+.contact dd a[href^="mailto:"] { overflow-wrap: anywhere; }
