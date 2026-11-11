@@ -33,6 +33,10 @@ radar `p:proj-shubham-chess-site`.
   wrapper (`phone.sh` pattern) — vw 375, scrollWidth 375 = clean.
 - Links: every local href/src resolves; every `#anchor` has an id. Dark mode: copy of
   index with `data-theme="dark"`.
+- Trainer: probe copy of index with `window.fetch` rejected → clicks `f1`,`f8` then
+  `a1`,`a8` and reads `.tr-msg` / `.tr-solved` / `.tr-streak`; a second probe with real
+  fetch checks 64 `.sq` in `.tr-board` and a rating in `.tr-tag`. Scripts loaded via
+  `--allow-file-access-from-files` with absolute file:// src.
 
 ## Where things are
 - `site/index.html` — **the real site** (2026-11-09), a standalone single-file page cut from
@@ -67,7 +71,7 @@ All now used on the page. Photo: `site/shubham.jpg` is cropped from the poster (
   (from Shubham via Akash, 2026-11-09; page links ratings.fide.com/profile/25799363)
 - State: **Chhattisgarh** · students taught: **100+** (same source)
 - State champion U-17, U-19 and U-25 · 3rd place, Senior State Championship
-- 2+ years of online coaching · ages 4–15 · classes in English **and Hindi** (FAQ, 11-09) · students worldwide
+- **3+ years** of online coaching (Akash, 2026-11-11; the Aug-2026 poster said 2+) · ages 4–15 · classes in English **and Hindi** (FAQ, 11-09) · students worldwide
 - Live 1-on-1 and small group · structured curriculum · weekly homework and assessments
 - Teaches: opening principles, tactical training, endgame techniques, tournament preparation
 - Bio in his own words (Akash supplied 2026-11-09; **removed from the page 2026-11-10 at his
@@ -120,8 +124,11 @@ screenshot crop was discarded. No FIDE ID yet.
 ## Class plans (from Shubham via Akash, 2026-11-09)
 - Small group: 2 classes/week · 50 min · max 5 students. **Pair (1 coach : 2 students)** — added
   by Akash 2026-11-10, same cadence assumed. One-to-one: 2 classes/week · 50 min.
-  Free assessment: one session. **Fees not published** — the section ends with "Contact me
-  for class schedules and fee details" (his wording), linked to WhatsApp.
+  Free assessment: one session. **Public prices = starting-from per month only** (Akash's
+  final word 2026-11-11, third change that day): group ₹1,500 · pair ₹3,000 · one-to-one
+  ₹4,500 (his figure; the 6-month plan works out to ₹4,667). Exact fee is given in the demo
+  class. Full 3/6-month table stays private in `assets/pricing-private.md` (gitignored).
+  One teacher per batch.
 
 ## FAQ (Shubham's own text via Akash, 2026-11-09 — on the page verbatim)
 Seven Q&As: equipment + Zoom/Google Meet + Lichess/Chess.com; beginners welcome; missed

@@ -15,7 +15,9 @@ shubham-chess-site/
 ├── docs/                ← plans for future work (student portal)
 ├── assets/              ← source material (poster, original photos); NOT deployed
 ├── site/                ← THE DEPLOYABLE ROOT. Static, no build step.
-│   ├── index.html       ← English home page (JS inline: puzzle, level picker, demo form, tz helper)
+│   ├── index.html       ← English home page (JS inline: level picker, demo form, GA events)
+│   ├── trainer.js       ← puzzle trainer (Lichess API stream + built-in fallback); strings via window.TRAINER_STRINGS
+│   ├── vendor/chess.min.js  ← chess.js 0.13.4 (BSD-2), export line swapped for a window global
 │   ├── styles.css       ← ONE stylesheet shared by every page
 │   ├── hi/index.html    ← Hindi home page (leaner: no picker/gallery/timings/guides)
 │   ├── guides/*.html    ← three parent guides (static articles)
@@ -28,7 +30,10 @@ shubham-chess-site/
 ```
 
 - **No build step.** Edit the HTML/CSS directly; open with `open site/index.html`. Shared
-  styles live in `site/styles.css` — never re-inline them.
+  styles live in `site/styles.css` — never re-inline them. **Every page links it as
+  `styles.css?v=<yyyymmdd><letter>`; bump the version in all five pages whenever the CSS
+  changes** (GitHub Pages caches it for 10 min and phones keep it longer: a stale sheet
+  with new HTML looks like a broken deploy — 2026-11-11).
 - **Verify renders headless** (Chrome's minimum window is ~500 px, so phone checks go
   through a 390-px iframe wrapper — see NOTES.md "Verifying"). Check: tag balance, 64 `.sq`
   buttons in the dumped DOM (= JS ran), no element wider than the viewport, local links and
@@ -90,6 +95,9 @@ The rules the page is written to. Feedback from Akash changes this list, never j
 - **Levels are a learning map**: each level card = who it is for (italic line) + six topics in
   teaching order + a meta row "Placed by the free assessment". No rating bands, no durations,
   no "3 months" promises. New topics go in order, not appended.
+- **The brand is "Shubham Chess Academy"** (Hindi: शुभम चेस अकादमी) everywhere: header,
+  titles, OG, footer, PDF, JSON-LD. Never "Shubham Singh Chess" (the pre-academy name,
+  retired 11-11).
 - **Audience is a parent, not a chess player.** Plain words; chess terms only where the
   page explains them (the puzzle, the lesson topics).
 - **The contact number is the WhatsApp Business line +91 82238 20430** (since 11-10). It is
@@ -100,8 +108,10 @@ The rules the page is written to. Feedback from Akash changes this list, never j
   composes the WhatsApp message from the child's details; the first field is focused on
   arrival. Direct wa.me links remain only on the floating button, the contact-block number
   and the lessons/plans sub-line. No stored forms, logins or payments.
-- **No prices on the page.** The class-plans section is four **pricing-style cards without
-  prices** (Small group 1:5 · Pair 1:2 · One-to-one 1:1 · Free assessment) (`.plans` → `article.plan`: badge, name, sub-line, "What's included" checklist,
+- **Public prices = one starting-from figure per format** (group ₹1,500 · pair ₹3,000 ·
+  one-to-one ₹4,500 per month), on the card and in the FAQ, with "exact fee shared in the
+  free assessment class". The 3/6-month totals stay in the gitignored
+  `assets/pricing-private.md` — never into a tracked file (public repo). The class-plans section is four **pricing-style cards without per-format prices** (Small group 1:5 · Pair 1:2 · One-to-one 1:1 · Free assessment) (`.plans` → `article.plan`: badge, name, sub-line, "What's included" checklist,
   no buttons on the paid cards; the only button in the section is on the fourth card, the
   free assessment itself — Akash removed the per-card buttons 11-10). One-to-one is `.featured`. Every bullet comes from his FAQ / class
   plans; no EMI, discounts, "save X%" or session counts we have not been given.
@@ -120,11 +130,17 @@ The rules the page is written to. Feedback from Akash changes this list, never j
   his own content) with a poster frame and a `<video controls playsinline>` tag, plus a
   "Watch on Instagram" link. Instagram's `embed.js` is NOT used: Akash wants only the video,
   and the embed's like/comment/"View more" chrome cannot be removed (2026-11-10).
-- **Coaches section** (`#coach`, heading "Meet our coaches", no sub-line) is a
-  **continuously sliding strip** (`.coaches-marquee` → `.coaches-track` → `article.ccard`,
-  the three cards followed by an `aria-hidden` copy so the CSS loop is seamless; pauses on
-  hover/focus; reduced-motion users get a static swipeable row). Each card: 4:3 photo on top with a `.badge` that reads "Coach" for everyone (no Head coach rank, 11-10), name + short `.tag`, one short
-  paragraph (bio verbatim; no personal quotes — Akash removed Shubham's 11-10), `.chips` for credentials, and a "Free assessment class"
+- **Coaches section** (`#coach`, heading "Meet our coaches", no sub-line) is a **one-at-a-time
+  slider** (`#cslider` → `.cslides` → `article.cslide`, dots + arrows, swipe on touch,
+  auto-advance 7 s paused on hover/focus, off under reduced-motion; JS inline near the demo
+  form). Each slide: circular photo (`.cphoto`, object-position per coach) left, `.cbody`
+  right with eyebrow "Coach", name + rating tag, bio paragraphs, uniform `.chips`, CTA.
+  Replaced the sliding strip on 11-11 (Akash's reference: circular portrait + text + dots).
+  Each card: 4:3 photo on top with a `.badge` that reads "Coach" for everyone (no Head coach rank, 11-10), name + short `.tag`, one short
+  paragraph (bio verbatim; no personal quotes — Akash removed Shubham's 11-10), uniform green `.chips` (value-only text, same size on every card; Shubham's four:
+  3× Chhattisgarh State Champion · Senior State Championship – 3rd Place · 3+ Years Online
+  Coaching Experience · FIDE Rating 1738), equal card heights with the CTA pinned to the
+  bottom, and a "Free assessment class"
   WhatsApp link at the foot. Akash chose this over the stacked bio layout (2026-11-10, after
   seeing a tutor-card reference). Card photos are `site/<name>-card.jpg` (900×675). Mirror on
   `hi/`. Intro video (item 23), when it exists, goes in Shubham's card in place of the photo.
@@ -134,8 +150,28 @@ The rules the page is written to. Feedback from Akash changes this list, never j
 - **No dependencies** except Google Fonts and Instagram's embed script. Must render fine if
   either fails. Pages share `styles.css`; no framework, no bundler.
 - **Static only** (see Hosting above). Any feature must work from `index.html` served as a
-  plain file.
+  plain file. **Puzzle trainer** (`#trainer`, in "Between classes"): streams puzzles from
+  `https://lichess.org/api/puzzle/next` (CORS `*`, no key; angle/difficulty per level) and
+  falls back to ten verified mate-in-ones if the fetch fails; legality via self-hosted
+  chess.js (the cdnjs build is an ES module and cannot be a plain `<script>`); solved count
+  and streak in localStorage only; `puzzle_solved` GA event. Test it headless with a probe
+  that clicks squares (see NOTES → Verifying).
 - **Phone first.** 16 px side gutters, no horizontal scroll, board usable with a thumb.
+- **Visual layer (11-11)**: the bottom of `styles.css` is an override layer that makes the
+  site "attractive" per Akash — gradient amber buttons, soft shadows + hover lift on every
+  card, alternating section backgrounds, eyebrow knight glyph + gradient underline on h2,
+  hero = a single centred column of copy (the photo-with-badges block was removed the same
+  night at Akash's request), puzzle lives in "Between classes", contact is a dark green panel with
+  the form in a white card, dark footer, pulsing WhatsApp float. Keep new components in
+  this language: `var(--radius)`, `var(--shadow)`, gradient badge. Reduced-motion is
+  respected (badges, pulse).
+- **Bold colour layer (11-11, below the visual layer in styles.css)**: light theme is warm
+  cream (`--bg #f7f3e8`) with a very faint chessboard texture; header + hero are deep green
+  with white text and amber accents; every section has its own tinted band (`#levels`
+  teal, `#class` amber, `#results` gold…); cards carry a coloured top/left accent bar and
+  coloured icon tiles cycling green / amber / teal / rose / violet / navy; section labels
+  are green pills. Keep new sections in this system: pick a band tint and an accent colour
+  from the six tokens, never a new hue.
 - **Both themes**: colors are tokens on `:root`; dark mode via `prefers-color-scheme` and
   `[data-theme]`. Never hard-code a color in a component.
 - **Honest content.** No fabricated results, reviews, student counts or ratings. Empty slot
@@ -319,3 +355,57 @@ When Akash gives feedback on the site, the copy, the design, or how this project
   and is baked into og.png.
 - 2026-11-11 — Akash: remove "three" from the hero. → "FIDE-rated coaches" without a count, EN + HI + meta/OG descriptions. Rule: no coach count in copy, so adding or losing a coach needs no rewrite.
 - 2026-11-11 — Akash asked for a multi-persona review (8 personas, parallel) of where visitors drop before messaging. → Collated in `research/persona-review-2026-11-11.md`; ranked list given. No code changed yet — he decides.
+- 2026-11-11 — Akash: production UI differs from local after a push. → Live files were
+  identical to local; the difference was a cached `styles.css`. Added a `?v=` cache-buster to
+  the stylesheet link on all five pages and a rule to bump it with every CSS change.
+- 2026-11-11 — Akash sent the full price table (group/pair/individual × 3/6 months) and
+  said: show only "Starting from ₹1,500/month" publicly, full pricing on enquiry, keep the
+  table private. → Starting price + "full pricing on enquiry" in the plans lede and a new
+  FAQ entry on EN + HI; "one coach for the whole batch" added; table saved to the
+  gitignored `assets/pricing-private.md`. No-prices rule rewritten.
+- 2026-11-11 — Akash, an hour after "show only starting-from": "I want price to show for
+  every group." → Price block on the Group, Pair and One-to-one cards (EN + HI), FAQ fees
+  answer lists all six figures, lede explains per-student / 3-or-6-month / pay once.
+  Prices rule rewritten; `assets/pricing-private.md` no longer secret but left in place.
+- 2026-11-11 — Akash: "just starting from 1500, 3000 and 4500 for each, that's it; actual
+  price in the demo class." → Cards show only "Starting from ₹X/month"; totals removed from
+  cards and FAQ on EN + HI; lede says the exact fee comes in the assessment class. Third
+  pricing instruction today; rule rewritten to match.
+- 2026-11-11 — Akash: "this website looks so simple, I want it very attractive" (and
+  remove the price totals, already gone locally). → Visual layer appended to styles.css;
+  hero puzzle replaced by Shubham's photo + floating badges; puzzle moved to "Between
+  classes" as a full-width card; dark contact panel; dark footer; card hover lift; EN + HI.
+  Style Contract gained the visual-layer rule.
+- 2026-11-11 — Akash: remove the hero photo-with-badges block. → Removed on EN + HI; hero is
+  now one centred column with a larger headline. Visual-layer rule updated.
+- 2026-11-11 — Akash: add lichess.org/training to the site. → Third practice card on EN + HI
+  with Lichess's own daily-puzzle iframe embed (client-side, static-safe) and a link to the
+  trainer; practice grid now 3 columns. Rule: third-party embeds that run in the browser
+  (Lichess frame, GA4) are fine; anything that stores data on our side is not.
+- 2026-11-11 — Akash: "I want children to solve here only and puzzles keep going next if
+  they solve" (not the Lichess embed). → `trainer.js` + `vendor/chess.min.js`: level tabs
+  (Beginner mate-in-1 easiest · Intermediate mate-in-2 easier · Tournament mix normal),
+  tap-to-move board, hint/skip/next, auto-advance 1.8 s after a solve, solved-today +
+  streak, Lichess API with built-in fallback; replaces both the single lesson puzzle and
+  the Lichess iframe card on EN + HI. Verified headless: live load (64 squares, rating tag)
+  and offline solve/wrong/auto-next flow.
+- 2026-11-11 — Akash: remove the FIDE ID and "100+ students" from Shubham's profile. →
+  Both chips dropped from his coach card and the bio sentence reworded on EN + HI. The FIDE
+  ID was also taken out of the JSON-LD `sameAs` and the coach-choosing guide, so the number
+  appears nowhere on the site.
+- 2026-11-11 — Akash: improve his own profile from existing facts only, four named
+  achievement tags, keep the three cards equal in height and structure, tags consistent
+  across cards, don't make his look more important. → Bio rewritten (two short paragraphs,
+  nothing new), the four tags added, all three cards' chips converted to the same
+  value-only green style, cards stretch to equal height with the CTA pinned. EN + HI.
+- 2026-11-11 — Akash: show one coach at a time (reference: circular photo, text right,
+  three dots) instead of all cards. → Coach slider with dots, arrows, swipe, auto-advance;
+  marquee removed on EN + HI. Coaches rule rewritten.
+- 2026-11-11 — Akash: "next one it should go by itself" (slider seemed stuck). → Auto-advance now every 5 s, no longer pauses on mouse hover and no longer disabled by reduced-motion; pauses only while a control inside has keyboard focus or during a touch swipe.
+- 2026-11-11 — Akash: his coaching experience is 3+ years. → Tag and bio updated on EN + HI (poster said 2+; NOTES records the change).
+- 2026-11-11 — Akash: "everything good but the website looks simple, colour and
+  background". → Bold colour layer: deep-green header + hero, cream page with faint
+  chessboard texture, tinted section bands, coloured accent bars and icon tiles, pill
+  labels, theme-color meta darkened. Texture dialled down after the first render looked
+  loud; pills fixed to fit their text. Rule added.
+- 2026-11-11 — Akash: use "Shubham Chess Academy" everywhere. → Header brand, page titles, OG titles and guide headers on EN + HI switched; the old "Shubham Singh Chess" name is gone. Brand rule added.

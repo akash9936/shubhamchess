@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>शुभम सिंह चेस कोचिंग</title>
+<title>शुभम चेस अकादमी</title>
 <meta name="description" content="4 से 15 साल के बच्चों के लिए लाइव ऑनलाइन चेस क्लास। कोच शुभम सिंह, एरीना इंटरनेशनल मास्टर और FIDE रेटेड खिलाड़ी। WhatsApp पर मुफ़्त असेसमेंट क्लास बुक करें।">
-<meta name="theme-color" content="#1f5a3f">
+<meta name="theme-color" content="#0f2f22">
 <meta property="og:type" content="website">
-<meta property="og:title" content="शुभम सिंह चेस कोचिंग">
+<meta property="og:title" content="शुभम चेस अकादमी">
 <meta property="og:description" content="4 से 15 साल के बच्चों के लिए लाइव ऑनलाइन चेस क्लास। मुफ़्त असेसमेंट क्लास।">
 <meta property="og:image" content="https://shubham.akashs.com/og.png">
 <meta property="og:url" content="https://shubham.akashs.com/hi/">
@@ -16,7 +16,7 @@
 <link rel="alternate" hreflang="hi" href="https://shubham.akashs.com/hi/">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&family=DM+Mono:wght@400;500&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="../styles.css">
+<link rel="stylesheet" href="../styles.css?v=20261111o">
 <style>
   body, .btn, .lang { font-family: "Noto Sans Devanagari", "Figtree", system-ui, sans-serif; }
   h1, h2, h3, .brand, .statgrid dd { font-family: "Noto Sans Devanagari", "Bricolage Grotesque", system-ui, sans-serif; }
@@ -29,7 +29,7 @@
 <body>
 <header class="site">
   <div class="wrap">
-    <a class="brand" href="#top"><span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>शुभम सिंह चेस</a>
+    <a class="brand" href="#top"><span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>शुभम चेस अकादमी</a>
     <nav class="links" aria-label="सेक्शन">
       <a href="#levels">लेवल</a>
       <a href="#class">क्लास</a>
@@ -64,22 +64,6 @@
         </ul>
       </div>
 
-      <div class="puzzle" aria-labelledby="pz-title">
-        <div class="puzzle-head">
-          <b id="pz-title">एक पहेली आज़माएँ</b>
-          <span class="eyebrow">सफ़ेद की चाल · एक चाल में मात</span>
-        </div>
-        <div class="board-frame">
-          <div class="ranks" aria-hidden="true"><span>8</span><span>7</span><span>6</span><span>5</span><span>4</span><span>3</span><span>2</span><span>1</span></div>
-          <div class="board" id="board" role="group" aria-label="शतरंज की बिसात। सफ़ेद की चाल, एक चाल में मात।"></div>
-          <div class="files" aria-hidden="true"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span><span>g</span><span>h</span></div>
-        </div>
-        <p class="puzzle-msg" id="pz-msg" aria-live="polite">पहले एक सफ़ेद मोहरा छुएँ, फिर वह खाना जहाँ उसे जाना है।</p>
-        <div class="puzzle-actions">
-          <button class="btn ghost small" id="pz-show" type="button">जवाब दिखाएँ</button>
-          <button class="btn ghost small" id="pz-reset" type="button">फिर से</button>
-        </div>
-      </div>
     </div>
   </section>
 
@@ -204,64 +188,42 @@
         <span class="eyebrow">हमारे कोच</span>
         <h2>हमारे कोच से मिलिए</h2>
       </div>
-      <div class="coaches-marquee" aria-label="Our coaches">
-        <div class="coaches-track">
-
-        <article class="ccard">
-          <div class="ccard-photo"><img src="../shubham-card.jpg" width="900" height="675" alt="शुभम सिंह शतरंज की बिसात पर" loading="lazy"><span class="badge">कोच</span></div>
-          <div class="ccard-body">
-            <div class="ccard-head"><h3>शुभम सिंह</h3><span class="tag">AIM · FIDE 1738</span></div>
-            <p>एरीना इंटरनेशनल मास्टर और FIDE रेटेड खिलाड़ी। छत्तीसगढ़ स्टेट चैंपियन अंडर-17, अंडर-19 और अंडर-25, सीनियर स्टेट चैंपियनशिप में तीसरा स्थान, और दो सालों में सौ से ज़्यादा बच्चों को ऑनलाइन कोचिंग।</p>
-            <ul class="chips"><li><b>FIDE रेटिंग</b>1738</li><li><b>FIDE ID</b><a href="https://ratings.fide.com/profile/25799363" target="_blank" rel="noopener">25799363</a></li><li><b>स्टेट खिताब</b>3</li><li><b>छात्र</b>100+</li></ul>
+      <div class="cslider" id="cslider" aria-roledescription="carousel" aria-label="हमारे कोच">
+        <button type="button" class="cnav cprev" aria-label="पिछला कोच">&#8249;</button>
+        <div class="cslides">
+        <article class="cslide is-on" role="group" aria-roledescription="slide" aria-label="1 / 3">
+          <div class="cphoto"><img src="../shubham-card.jpg" alt="शुभम सिंह शतरंज की बिसात पर" loading="lazy" style="object-position:50% 35%"></div>
+          <div class="cbody">
+            <span class="eyebrow">कोच</span>
+            <h3>शुभम सिंह <span class="tag">AIM · FIDE 1738</span></h3>
+            <p>एरीना इंटरनेशनल मास्टर और FIDE-रेटेड खिलाड़ी, रेटिंग 1738। तीन बार छत्तीसगढ़ स्टेट चैंपियन — अंडर-17, अंडर-19 और अंडर-25 — और सीनियर स्टेट चैंपियनशिप में तीसरा स्थान।</p><p>तीन साल से ज़्यादा बच्चों को ऑनलाइन कोचिंग, अकादमी के पाठ्यक्रम के हिसाब से — ओपनिंग के सिद्धांत और टैक्टिक्स से लेकर एंडगेम और टूर्नामेंट की तैयारी तक।</p>
+            <ul class="chips"><li>3× छत्तीसगढ़ स्टेट चैंपियन</li><li>सीनियर स्टेट चैंपियनशिप – तीसरा स्थान</li><li>3+ साल ऑनलाइन कोचिंग अनुभव</li><li>FIDE रेटिंग 1738</li></ul>
             <a class="ccard-cta" href="#demo" data-loc="coach-shubham">मुफ़्त असेसमेंट क्लास</a>
           </div>
         </article>
-        <article class="ccard">
-          <div class="ccard-photo"><img src="../soundariya-card.jpg" width="900" height="675" alt="सौंदर्या लक्ष्मी शतरंज की बिसात पर" loading="lazy"><span class="badge">कोच</span></div>
-          <div class="ccard-body">
-            <div class="ccard-head"><h3>सौंदर्या लक्ष्मी</h3><span class="tag">FIDE 1580</span></div>
+        <article class="cslide" role="group" aria-roledescription="slide" aria-label="2 / 3" hidden>
+          <div class="cphoto"><img src="../soundariya-card.jpg" alt="सौंदर्या लक्ष्मी शतरंज की बिसात पर" loading="lazy" style="object-position:70% 30%"></div>
+          <div class="cbody">
+            <span class="eyebrow">कोच</span>
+            <h3>सौंदर्या लक्ष्मी <span class="tag">FIDE 1580</span></h3>
             <p>सौंदर्या लक्ष्मी 1580 रेटिंग वाली FIDE-रेटेड खिलाड़ी हैं और कॉमनवेल्थ चेस चैंपियनशिप में अपने देश का प्रतिनिधित्व कर चुकी हैं। प्रतियोगी अनुभव और चेस के लिए जुनून के साथ वे छात्रों को अपना खेल और आत्मविश्वास बढ़ाने में मदद करती हैं।</p>
-            <ul class="chips"><li><b>FIDE रेटिंग</b>1580</li><li><b>अंतरराष्ट्रीय</b>कॉमनवेल्थ चेस चैंपियनशिप</li></ul>
+            <ul class="chips"><li>FIDE रेटिंग 1580</li><li>कॉमनवेल्थ चेस चैंपियनशिप</li></ul>
             <a class="ccard-cta" href="#demo" data-loc="coach-soundariya">मुफ़्त असेसमेंट क्लास</a>
           </div>
         </article>
-        <article class="ccard">
-          <div class="ccard-photo"><img src="../sanjay-card.jpg" width="900" height="675" alt="संजय भारद्वाज" loading="lazy"><span class="badge">कोच</span></div>
-          <div class="ccard-body">
-            <div class="ccard-head"><h3>संजय भारद्वाज</h3><span class="tag">FIDE 1637</span></div>
+        <article class="cslide" role="group" aria-roledescription="slide" aria-label="3 / 3" hidden>
+          <div class="cphoto"><img src="../sanjay-card.jpg" alt="संजय भारद्वाज" loading="lazy" style="object-position:50% 30%"></div>
+          <div class="cbody">
+            <span class="eyebrow">कोच</span>
+            <h3>संजय भारद्वाज <span class="tag">FIDE 1637</span></h3>
             <p>1637 FIDE रेटिंग वाले खिलाड़ी, 3+ साल का कोचिंग अनुभव। उन्होंने ऑल इंडिया यूनिवर्सिटी चेस चैंपियनशिप में पाँच बार अपनी यूनिवर्सिटी का प्रतिनिधित्व किया और 2022–23 में उपविजेता रहे। 120+ टूर्नामेंट खेलने का मज़बूत प्रतियोगी अनुभव वे अपनी कोचिंग में लाते हैं।</p>
-            <ul class="chips"><li><b>FIDE रेटिंग</b>1637</li><li><b>कोचिंग</b>3+ साल</li><li><b>टूर्नामेंट</b>120+</li><li><b>ऑल इंडिया यूनिवर्सिटी</b>उपविजेता 2022–23</li></ul>
+            <ul class="chips"><li>FIDE रेटिंग 1637</li><li>3+ साल कोचिंग अनुभव</li><li>120+ टूर्नामेंट</li><li>ऑल इंडिया यूनिवर्सिटी – उपविजेता 2022–23</li></ul>
             <a class="ccard-cta" href="#demo" data-loc="coach-3">मुफ़्त असेसमेंट क्लास</a>
           </div>
         </article>
-<article class="ccard" aria-hidden="true">
-          <div class="ccard-photo"><img src="../shubham-card.jpg" width="900" height="675" alt="शुभम सिंह शतरंज की बिसात पर" loading="lazy" tabindex="-1"><span class="badge">कोच</span></div>
-          <div class="ccard-body">
-            <div class="ccard-head"><h3>शुभम सिंह</h3><span class="tag">AIM · FIDE 1738</span></div>
-            <p>एरीना इंटरनेशनल मास्टर और FIDE रेटेड खिलाड़ी। छत्तीसगढ़ स्टेट चैंपियन अंडर-17, अंडर-19 और अंडर-25, सीनियर स्टेट चैंपियनशिप में तीसरा स्थान, और दो सालों में सौ से ज़्यादा बच्चों को ऑनलाइन कोचिंग।</p>
-            <ul class="chips"><li><b>FIDE रेटिंग</b>1738</li><li><b>FIDE ID</b><a href="https://ratings.fide.com/profile/25799363" target="_blank" rel="noopener">25799363</a></li><li><b>स्टेट खिताब</b>3</li><li><b>छात्र</b>100+</li></ul>
-            <a class="ccard-cta" tabindex="-1" href="https://wa.me/918223820430?text=Hi%2C%20I%20would%20like%20to%20book%20a%20free%20chess%20assessment%20class%20for%20my%20child." target="_blank" rel="noopener" data-loc="coach-shubham">मुफ़्त असेसमेंट क्लास</a>
-          </div>
-        </article>
-<article class="ccard" aria-hidden="true">
-          <div class="ccard-photo"><img src="../soundariya-card.jpg" width="900" height="675" alt="सौंदर्या लक्ष्मी शतरंज की बिसात पर" loading="lazy" tabindex="-1"><span class="badge">कोच</span></div>
-          <div class="ccard-body">
-            <div class="ccard-head"><h3>सौंदर्या लक्ष्मी</h3><span class="tag">FIDE 1580</span></div>
-            <p>सौंदर्या लक्ष्मी 1580 रेटिंग वाली FIDE-रेटेड खिलाड़ी हैं और कॉमनवेल्थ चेस चैंपियनशिप में अपने देश का प्रतिनिधित्व कर चुकी हैं। प्रतियोगी अनुभव और चेस के लिए जुनून के साथ वे छात्रों को अपना खेल और आत्मविश्वास बढ़ाने में मदद करती हैं।</p>
-            <ul class="chips"><li><b>FIDE रेटिंग</b>1580</li><li><b>अंतरराष्ट्रीय</b>कॉमनवेल्थ चेस चैंपियनशिप</li></ul>
-            <a class="ccard-cta" tabindex="-1" href="https://wa.me/918223820430?text=Hi%2C%20I%20would%20like%20to%20book%20a%20free%20chess%20assessment%20class%20for%20my%20child." target="_blank" rel="noopener" data-loc="coach-soundariya">मुफ़्त असेसमेंट क्लास</a>
-          </div>
-        </article>
-<article class="ccard" aria-hidden="true">
-          <div class="ccard-photo"><img src="../sanjay-card.jpg" width="900" height="675" alt="संजय भारद्वाज" loading="lazy" tabindex="-1"><span class="badge">कोच</span></div>
-          <div class="ccard-body">
-            <div class="ccard-head"><h3>संजय भारद्वाज</h3><span class="tag">FIDE 1637</span></div>
-            <p>1637 FIDE रेटिंग वाले खिलाड़ी, 3+ साल का कोचिंग अनुभव। उन्होंने ऑल इंडिया यूनिवर्सिटी चेस चैंपियनशिप में पाँच बार अपनी यूनिवर्सिटी का प्रतिनिधित्व किया और 2022–23 में उपविजेता रहे। 120+ टूर्नामेंट खेलने का मज़बूत प्रतियोगी अनुभव वे अपनी कोचिंग में लाते हैं।</p>
-            <ul class="chips"><li><b>FIDE रेटिंग</b>1637</li><li><b>कोचिंग</b>3+ साल</li><li><b>टूर्नामेंट</b>120+</li><li><b>ऑल इंडिया यूनिवर्सिटी</b>उपविजेता 2022–23</li></ul>
-            <a class="ccard-cta" tabindex="-1" href="https://wa.me/918223820430?text=Hi%2C%20I%20would%20like%20to%20book%20a%20free%20chess%20assessment%20class%20for%20my%20child." target="_blank" rel="noopener" data-loc="coach-3">मुफ़्त असेसमेंट क्लास</a>
-          </div>
-        </article>
         </div>
+        <button type="button" class="cnav cnext" aria-label="अगला कोच">&#8250;</button>
+        <div class="cdots" role="tablist"><button type="button" class="cdot is-on" aria-label="शुभम सिंह"></button><button type="button" class="cdot" aria-label="सौंदर्या लक्ष्मी"></button><button type="button" class="cdot" aria-label="संजय भारद्वाज"></button></div>
       </div>
     </div>
   </section>
@@ -293,6 +255,35 @@
         <span class="eyebrow">क्लास के बीच</span>
         <h2>अभ्यास जो क्लास ख़त्म होने के बाद भी चलता है</h2>
       </div>
+      <div class="trainer" id="trainer">
+        <div class="tr-side">
+          <span class="eyebrow">पज़ल ट्रेनर</span>
+          <h3>एक हल करो, अगली अपने आप</h3>
+          <p>लेवल चुनें। एक मोहरा छुएँ, फिर वह खाना जहाँ उसे जाना है। पहेली हल होते ही अगली अपने आप आ जाएगी।</p>
+          <div class="tr-levels" role="group" aria-label="लेवल">
+            <button type="button" class="tr-level is-on" data-level="beginner">बिगिनर</button>
+            <button type="button" class="tr-level" data-level="intermediate">इंटरमीडिएट</button>
+            <button type="button" class="tr-level" data-level="tournament">टूर्नामेंट</button>
+          </div>
+          <p class="tr-msg" aria-live="polite">पहेली आ रही है…</p>
+          <div class="puzzle-actions">
+            <button class="btn ghost small tr-hint" type="button">संकेत</button>
+            <button class="btn ghost small tr-skip" type="button">छोड़ें</button>
+            <button class="btn primary small tr-next" type="button" hidden>अगली पहेली</button>
+          </div>
+          <dl class="tr-stats">
+            <div><dt>आज हल कीं</dt><dd class="tr-solved">0</dd></div>
+            <div><dt>लगातार</dt><dd class="tr-streak">0</dd></div>
+            <div><dt>पहेली</dt><dd class="tr-tag">—</dd></div>
+          </dl>
+          <p class="note">पहेलियाँ मुफ़्त Lichess डेटाबेस से आती हैं और हर बार बदलती हैं। आपकी गिनती सिर्फ़ इसी डिवाइस पर रहती है।</p>
+        </div>
+        <div class="board-frame">
+          <div class="ranks" aria-hidden="true"></div>
+          <div class="board tr-board" role="group" aria-label="पहेली की बिसात"></div>
+          <div class="files" aria-hidden="true"></div>
+        </div>
+      </div>
       <div class="practice">
         <article class="pcard">
           <span class="piece" aria-hidden="true">&#x2659;&#xFE0E;</span>
@@ -315,13 +306,15 @@
       <div class="head">
         <span class="eyebrow">क्लास प्लान</span>
         <h2>अपने बच्चे के लिए सही फ़ॉर्मेट चुनें</h2>
-        <p class="lede">हर फ़ॉर्मेट में वही पाठ्यक्रम और वही चार-चरण की क्लास। फ़ीस फ़ॉर्मेट और लेवल पर निर्भर करती है, इसलिए WhatsApp पर पूछें — हम समय और फ़ीस के साथ जवाब देंगे।</p>
+        <p class="lede">हर फ़ॉर्मेट में वही पाठ्यक्रम और वही चार-चरण की क्लास, और पूरे बैच के लिए शुरू से आख़िर तक एक ही कोच।</p>
+        <p class="price-from">प्रति छात्र शुरुआती फ़ीस, ताकि बात करने से पहले आपको अंदाज़ा हो। आपके बच्चे के लेवल और प्लान की सही फ़ीस मुफ़्त असेसमेंट क्लास में बताई जाती है।</p>
       </div>
       <div class="plans">
         <article class="plan">
           <span class="plan-badge">अधिकतम 5 छात्र</span>
           <div class="plan-head"><span class="plan-icon" aria-hidden="true">&#x265F;&#xFE0E;&#x265F;&#xFE0E;</span><h3>छोटा ग्रुप</h3></div>
           <p class="plan-sub">एक जैसी उम्र और स्तर के अधिकतम 5 बच्चे</p>
+          <div class="price"><div class="price-main"><span class="from">शुरू</span><b>₹1,500</b><span>/माह से</span></div></div>
           <p class="plan-inc">क्या-क्या शामिल है</p>
           <ul class="plan-list"><li>लाइव क्लास, 1 कोच और अधिकतम 5 छात्र</li><li>हफ़्ते में 2 क्लास, 50 मिनट की</li><li>उम्र, खेल की ताक़त और स्तर के हिसाब से ग्रुप</li><li>हर हफ़्ते होमवर्क: पहेलियाँ और वर्कशीट</li><li>नियमित असेसमेंट और माता-पिता को संदेश</li></ul>
         </article>
@@ -329,6 +322,7 @@
           <span class="plan-badge">2 छात्र</span>
           <div class="plan-head"><span class="plan-icon" aria-hidden="true">&#x265F;&#xFE0E;&#x265F;&#xFE0E;</span><h3>जोड़ी</h3></div>
           <p class="plan-sub">एक जैसे स्तर के दो बच्चे — भाई-बहन या दोस्त</p>
+          <div class="price"><div class="price-main"><span class="from">शुरू</span><b>₹3,000</b><span>/माह से</span></div></div>
           <p class="plan-inc">क्या-क्या शामिल है</p>
           <ul class="plan-list"><li>लाइव क्लास, 1 कोच और 2 छात्र</li><li>हफ़्ते में 2 क्लास, 50 मिनट की</li><li>दोनों बच्चे एक ही स्तर पर, कोई इंतज़ार नहीं</li><li>हर हफ़्ते होमवर्क: पहेलियाँ और वर्कशीट</li><li>हर बच्चे के लिए गेम समीक्षा और असेसमेंट</li></ul>
         </article>
@@ -336,6 +330,7 @@
           <span class="plan-badge">व्यक्तिगत</span>
           <div class="plan-head"><span class="plan-icon" aria-hidden="true">&#x265F;&#xFE0E;</span><h3>वन-टू-वन</h3></div>
           <p class="plan-sub">सिर्फ़ आपका बच्चा और कोच</p>
+          <div class="price"><div class="price-main"><span class="from">शुरू</span><b>₹4,500</b><span>/माह से</span></div></div>
           <p class="plan-inc">क्या-क्या शामिल है</p>
           <ul class="plan-list"><li>लाइव क्लास, 1 कोच और 1 छात्र</li><li>हफ़्ते में 2 क्लास, 50 मिनट की</li><li>आपके बच्चे के खेल और कमियों के हिसाब से योजना</li><li>हर हफ़्ते होमवर्क: पहेलियाँ और वर्कशीट</li><li>हर क्लास के बाद गेम की समीक्षा</li></ul>
         </article>
@@ -365,6 +360,7 @@
         <details><summary>आप किस उम्र के बच्चों को पढ़ाते हैं?</summary><p>मैं 4 से 15 साल के बच्चों को पढ़ाता हूँ — बिल्कुल नए से लेकर इंटरमीडिएट स्तर तक। क्लास हिन्दी और अंग्रेज़ी दोनों में उपलब्ध हैं।</p></details>
         <details><summary>हम भारत से बाहर रहते हैं। क्या हमारा बच्चा जुड़ सकता है?</summary><p>बिल्कुल! दुनिया भर के छात्रों का स्वागत है। क्लास ऑनलाइन होती हैं, और समय अलग-अलग टाइम ज़ोन के हिसाब से आपसी सुविधा से तय किया जा सकता है।</p></details>
         <details><summary>छात्रों के ग्रुप कैसे बनते हैं?</summary><p>छात्रों को उम्र, खेल की ताक़त और सीखने के स्तर के हिसाब से ग्रुप में रखा जाता है, ताकि सीखना असरदार हो। छोटे ग्रुप में अधिकतम 5 छात्र होते हैं।</p></details>
+        <details><summary>फ़ीस कितनी है?</summary><p>प्रति छात्र, छोटे ग्रुप में ₹1,500 प्रति माह से, जोड़ी में ₹3,000 से और वन-टू-वन में ₹4,500 से शुरू। सही फ़ीस प्लान की अवधि पर निर्भर करती है और मुफ़्त असेसमेंट क्लास में बताई जाती है, जिसका कोई शुल्क नहीं।</p></details>
         <details><summary>क्या आप सीखने की सामग्री देते हैं?</summary><p>हाँ! छात्रों को अभ्यास की पहेलियाँ, वर्कशीट, पाठ सामग्री और होमवर्क मिलता है, ताकि क्लास में सीखा हुआ पक्का हो।</p></details>
       </div>
     </div>
@@ -402,45 +398,11 @@
 
 <footer class="site"><div class="wrap">© 2026 शुभम चेस अकादमी · <a href="https://www.instagram.com/shubhamsinghchess/" target="_blank" rel="noopener">Instagram</a> · <a href="../" lang="en">English</a></div></footer>
 
+<script src="../vendor/chess.min.js"></script>
+<script>window.TRAINER_STRINGS={white:"सफ़ेद",black:"काला",empty:"खाली",pieces:{k:"राजा",q:"वज़ीर",r:"हाथी",b:"ऊँट",n:"घोड़ा",p:"प्यादा"},levelNames:{beginner:"बिगिनर",intermediate:"इंटरमीडिएट",tournament:"टूर्नामेंट"},loading:"पहेली आ रही है…",yourMoveWhite:"सफ़ेद की चाल। एक सफ़ेद मोहरा छुएँ।",yourMoveBlack:"काले की चाल। एक काला मोहरा छुएँ।",movesToFind:"{n} चालें खोजें।",nowTap:"अब वह खाना छुएँ जहाँ उसे जाना है।",tapYourPiece:"पहले अपना एक मोहरा छुएँ।",cantGo:"यह मोहरा वहाँ नहीं जा सकता। दूसरा खाना आज़माएँ।",wrong:"यह नहीं। देखिए विरोधी क्या धमकी दे रहा है, और फिर कोशिश करें।",keepGoing:"बढ़िया। फिर आपकी चाल।",solved:"हल हो गई! अगली पहेली आ रही है…",hint:"संकेत: चलने वाला मोहरा हाइलाइट है।",builtIn:"बिल्ट-इन"};</script>
+<script src="../trainer.js"></script>
 <script>
 (function () {
-  var START = { a7: "bp", f7: "bp", g7: "bp", h7: "bp", g8: "bk", c6: "bn", b2: "br", a2: "wp", f2: "wp", g2: "wp", h2: "wp", g1: "wk", e1: "wr", f3: "wn" };
-  var GLYPH = { k: "♚", q: "♛", r: "♜", b: "♝", n: "♞", p: "♟" };
-  var NAME = { k: "राजा", q: "वज़ीर", r: "हाथी", b: "ऊँट", n: "घोड़ा", p: "प्यादा" };
-  var FILES = "abcdefgh";
-  var board = document.getElementById("board"), msg = document.getElementById("pz-msg");
-  var pos, picked, solved;
-  function draw(last) {
-    board.textContent = "";
-    for (var r = 8; r >= 1; r--) for (var f = 0; f < 8; f++) {
-      var id = FILES[f] + r, pc = pos[id], b = document.createElement("button");
-      b.type = "button"; b.id = "sq-" + id; b.dataset.sq = id;
-      b.className = "sq " + ((f + r) % 2 === 0 ? "l" : "d");
-      if (pc) { b.textContent = GLYPH[pc[1]] + "︎"; b.classList.add(pc[0]); }
-      b.setAttribute("aria-label", id + (pc ? ", " + (pc[0] === "w" ? "सफ़ेद " : "काला ") + NAME[pc[1]] : ", खाली"));
-      if (id === picked) b.classList.add("pick");
-      if (last && (id === last[0] || id === last[1])) b.classList.add("last");
-      if (solved && id === "g8") b.classList.add("mated");
-      board.appendChild(b);
-    }
-  }
-  function reset() { pos = Object.assign({}, START); picked = null; solved = false; msg.textContent = "पहले एक सफ़ेद मोहरा छुएँ, फिर वह खाना जहाँ उसे जाना है।"; draw(); }
-  function solve() {
-    pos = Object.assign({}, START); delete pos.e1; pos.e8 = "wr"; picked = null; solved = true;
-    msg.innerHTML = "<b>1. Re8#</b> चेकमेट। राजा अपने ही प्यादों के पीछे फँसा है, और कोई मोहरा हाथी को न ले सकता है, न f8 पर बीच में आ सकता है। यह बैक-रैंक मेट शुरुआती खिलाड़ियों के पहले पैटर्न में से एक है।";
-    draw(["e1", "e8"]);
-  }
-  board.addEventListener("click", function (e) {
-    var t = e.target.closest(".sq"); if (!t || solved) return;
-    var id = t.dataset.sq, pc = pos[id];
-    if (pc && pc[0] === "w") { picked = id; draw(); msg.textContent = "अब वह खाना छुएँ जहाँ " + NAME[pc[1]] + " को जाना है।"; }
-    else if (picked) { if (picked === "e1" && id === "e8") solve(); else { picked = null; draw(); msg.textContent = "यह चेकमेट नहीं है। देखिए काला राजा कहाँ भाग सकता है। फिर कोशिश करें।"; } }
-    else msg.textContent = "सफ़ेद की चाल है। पहले एक सफ़ेद मोहरा छुएँ।";
-    var again = document.getElementById("sq-" + id); if (again) again.focus({ preventScroll: true });
-  });
-  document.getElementById("pz-show").addEventListener("click", solve);
-  document.getElementById("pz-reset").addEventListener("click", reset);
-  reset();
   document.addEventListener("click", function (e) {
     var a = e.target.closest('a[href^="https://wa.me"], a[href^="tel:"], a[download]');
     if (!a || typeof window.gtag !== "function") return;
@@ -451,6 +413,22 @@
     var a = e.target.closest('a[href="#demo"]'); if (!a) return;
     setTimeout(function () { var f = document.getElementById("df-name"); if (f) f.focus({ preventScroll: true }); }, 450);
   });
+  // --- coach slider: one at a time, dots, arrows, swipe, auto-advance (pauses on hover/focus) ---
+  (function () {
+    var root = document.getElementById("cslider"); if (!root) return;
+    var slides = root.querySelectorAll(".cslide"), dots = root.querySelectorAll(".cdot"), i = 0, timer;
+    function show(n) { i = (n + slides.length) % slides.length; slides.forEach(function (s, k) { s.hidden = k !== i; s.classList.toggle("is-on", k === i); }); dots.forEach(function (d, k) { d.classList.toggle("is-on", k === i); d.setAttribute("aria-selected", k === i); }); }
+    function start() { stop(); timer = setInterval(function () { show(i + 1); }, 5000); }
+    function stop() { if (timer) clearInterval(timer); timer = null; }
+    root.querySelector(".cprev").addEventListener("click", function () { show(i - 1); start(); });
+    root.querySelector(".cnext").addEventListener("click", function () { show(i + 1); start(); });
+    dots.forEach(function (d, k) { d.addEventListener("click", function () { show(k); start(); }); });
+    root.addEventListener("focusin", stop); root.addEventListener("focusout", start);
+    var x0 = null;
+    root.addEventListener("touchstart", function (e) { x0 = e.touches[0].clientX; stop(); }, { passive: true });
+    root.addEventListener("touchend", function (e) { if (x0 === null) return; var dx = e.changedTouches[0].clientX - x0; if (Math.abs(dx) > 40) show(i + (dx < 0 ? 1 : -1)); x0 = null; start(); }, { passive: true });
+    show(0); start();
+  })();
   var dform = document.getElementById("demo-form");
   dform.addEventListener("submit", function (e) {
     e.preventDefault();
