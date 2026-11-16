@@ -33,6 +33,27 @@ service cloud.firestore {
       allow read, write: if isCoach();
     }
 
+    // Free-assessment requests from the public form on the home page. Anyone may add one
+    // well-formed request; only the coach can see, change or remove them.
+    match /demoRequests/{id} {
+      allow create: if demoOk(request.resource.data);
+      allow read, update, delete: if isCoach();
+
+      function demoOk(d) {
+        return d.keys().hasOnly(['childName', 'age', 'played', 'preferredTime', 'parentName', 'mobile', 'lang', 'status', 'createdAt'])
+          && d.keys().hasAll(['childName', 'age', 'played', 'preferredTime', 'parentName', 'mobile', 'lang', 'status', 'createdAt'])
+          && d.childName is string && d.childName.size() >= 1 && d.childName.size() <= 40
+          && d.age is int && d.age >= 4 && d.age <= 15
+          && d.played is string && d.played.size() <= 40
+          && d.preferredTime is string && d.preferredTime.size() <= 40
+          && d.parentName is string && d.parentName.size() >= 1 && d.parentName.size() <= 60
+          && d.mobile is string && d.mobile.matches('^[+]?[0-9]{10,15}$')
+          && d.lang in ['en', 'hi']
+          && d.status == 'new'
+          && d.createdAt == request.time;
+      }
+    }
+
     match /sessions/{id} {
       allow read: if isCoach()
         || (isActiveStudent() && request.auth.uid in resource.data.studentIds);

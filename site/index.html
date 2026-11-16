@@ -27,7 +27,7 @@
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-JBH3RL4PTN');</script>
 <title>Shubham Chess Academy</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="styles.css?v=20261117c">
+<link rel="stylesheet" href="styles.css?v=20261117p">
 </head>
 <body>
 <header class="site">
@@ -460,15 +460,19 @@
     <div class="wrap">
       <div class="contact-copy">
         <span class="eyebrow">Free assessment class</span>
-        <h2>Book a free assessment on WhatsApp</h2>
-        <p class="lede">Send your child's age and whether they have played before. Shubham replies with a time slot. The assessment is one live class that shows where your child stands and which level fits. Assessment slots are limited.</p>
+        <h2>Book a free assessment class</h2>
+        <p class="lede">Tell us your child's age and whether they have played before, and leave your mobile number. Shubham replies with a time slot. The assessment is one live class that shows where your child stands and which level fits. Assessment slots are limited.</p>
         <form class="demo-form" id="demo-form">
-          <div class="field"><label for="df-name">Child's first name</label><input id="df-name" name="name" type="text" autocomplete="off" placeholder="e.g. Aarav"></div>
-          <div class="field"><label for="df-age">Age</label><input id="df-age" name="age" type="number" min="4" max="15" inputmode="numeric" placeholder="4 to 15"></div>
+          <div class="field"><label for="df-name">Child's first name</label><input id="df-name" name="name" type="text" autocomplete="off" placeholder="e.g. Aarav" maxlength="40" required></div>
+          <div class="field"><label for="df-age">Age</label><input id="df-age" name="age" type="number" min="4" max="15" inputmode="numeric" placeholder="4 to 15" required></div>
           <div class="field"><label for="df-exp">Played before?</label><select id="df-exp" name="exp"><option>Never</option><option>Knows the moves</option><option>Plays regularly</option><option>Plays tournaments</option></select></div>
           <div class="field"><label for="df-time">Preferred time</label><select id="df-time" name="time"><option>Weekday evenings</option><option>Weekday mornings</option><option>Weekends</option><option>Flexible</option></select></div>
-          <button class="btn primary" type="submit" data-loc="form">Message on WhatsApp</button>
-          <p class="note" style="margin-top:4px">This opens WhatsApp with your message ready to send. Nothing is stored on this site.</p>
+          <div class="field"><label for="df-parent">Your name</label><input id="df-parent" name="parent" type="text" autocomplete="name" maxlength="60" required></div>
+          <div class="field"><label for="df-mobile">Your mobile number</label><input id="df-mobile" name="mobile" type="tel" autocomplete="tel" inputmode="tel" placeholder="+91 98765 43210" maxlength="20" required></div>
+          <div class="field" hidden aria-hidden="true"><label for="df-website">Website</label><input id="df-website" name="website" type="text" tabindex="-1" autocomplete="off"></div>
+          <button class="btn primary" type="submit" data-loc="form">Book a free assessment</button>
+          <p class="note" id="demo-msg" role="alert" style="color:var(--rose)" hidden></p>
+          <p class="note" style="margin-top:4px">We use these details only to contact you about the class. Prefer to write to us yourself? <a href="https://wa.me/918223820430" target="_blank" rel="noopener">Message us on WhatsApp</a>.</p>
         </form>
       </div>
       <dl class="ways">
@@ -543,15 +547,10 @@
     root.addEventListener("touchend", function (e) { if (x0 === null) return; var dx = e.changedTouches[0].clientX - x0; if (Math.abs(dx) > 40) show(i + (dx < 0 ? 1 : -1)); x0 = null; start(); }, { passive: true });
     show(0); start();
   })();
-  var dform = document.getElementById("demo-form");
-  dform.addEventListener("submit", function (e) {
-    e.preventDefault();
-    var fd = new FormData(dform);
-    var name = (fd.get("name") || "").toString().trim(), age = (fd.get("age") || "").toString().trim();
-    var text = "Hi, I would like to book a free chess assessment class" + (name ? " for " + name : " for my child") + (age ? " (age " + age + ")" : "") + ". " + fd.get("exp") + " before. Preferred time: " + fd.get("time") + ".";
-    window.open("https://wa.me/918223820430?text=" + encodeURIComponent(text), "_blank", "noopener");
-  });
 })();
 </script>
+<script>window.DEMO_STRINGS={lang:"en",needNames:"Please fill in your child's name and your name.",needAge:"We teach ages 4 to 15. Please enter your child's age.",needMobile:"Please enter your mobile number with all its digits.",failed:"We could not save your request just now. Please send it on WhatsApp instead:",waLinkLabel:"Message us on WhatsApp",waText:"Hi, I would like to book a free chess assessment class for {child} (age {age}). {played} before. Preferred time: {time}. My name is {parent}.",doneTitle:"Thank you. Your request is with us.",doneBody:"Shubham will contact you on {mobile} with a time slot for {child}'s free assessment class."};</script>
+<script src="demo-form.js?v=20261117a"></script>
+<script src="nav.js?v=20261117a" defer></script>
 </body>
 </html>

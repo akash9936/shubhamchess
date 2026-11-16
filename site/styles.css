@@ -651,3 +651,85 @@ footer.site .wrap { line-height: 1.9; }
 nav.links { gap: 16px; font-size: 0.92rem; }
 @media (min-width: 1101px) { header.site .brand { white-space: nowrap; } }
 @media (max-width: 1100px) { body:has(.jump) nav.links { display: none; } .jump { display: block; } }
+
+/* ---------- Phone layer (2026-11-17) ----------
+   Header is one row on every width: the brand never wraps, buttons never wrap, and on
+   narrow screens the links open from a Menu button (nav.js sets html.menu-mode). */
+header.site .brand, header.site .btn { white-space: nowrap; }
+header.site .brand { min-width: 0; overflow: hidden; }
+.menu-btn { display: none; }
+nav.links a.nav-cta { display: none; }
+html.menu-mode nav.links, html.menu-mode .jump { display: none; }
+html.menu-mode header.site .wrap { gap: 10px; }
+html.menu-mode .menu-btn {
+  display: inline-flex; align-items: center; gap: 9px; flex: none; height: 44px; padding: 0 14px;
+  font: inherit; font-weight: 700; font-size: 0.92rem; color: #fff; cursor: pointer;
+  background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.3); border-radius: 999px;
+}
+.menu-ico { display: grid; gap: 4px; width: 18px; }
+.menu-ico i { height: 2px; border-radius: 2px; background: currentColor; transition: transform .2s ease, opacity .2s ease; }
+header.menu-open .menu-ico i:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+header.menu-open .menu-ico i:nth-child(2) { opacity: 0; }
+header.menu-open .menu-ico i:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+html.menu-mode header.menu-open nav.links {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px;
+  position: absolute; left: 0; right: 0; top: 100%; padding: 14px 20px 20px;
+  background: #0e1713; border-bottom: 1px solid rgba(255,255,255,0.1); box-shadow: 0 18px 40px rgba(0,0,0,0.35);
+  max-height: calc(100vh - 72px); overflow-y: auto; font-size: 1rem;
+}
+html.menu-mode header.menu-open nav.links a:not(.nav-cta) {
+  display: flex; align-items: center; min-height: 48px; padding: 0 14px; border-radius: 12px;
+  background: rgba(255,255,255,0.07); color: #f2f7f2; font-weight: 600;
+}
+html.menu-mode header.menu-open nav.links a.nav-cta { display: flex; justify-content: center; grid-column: 1 / -1; margin-top: 6px; min-height: 50px; }
+@media (max-width: 560px) {
+  html.menu-mode header.site .wrap > a.btn.primary { display: none; }   /* it is in the menu panel */
+}
+@media (max-width: 420px) {
+  header.site .brand { font-size: 0.95rem; gap: 8px; }
+  header.site .brand .mark { width: 22px; height: 22px; }
+  .lang { padding: 6px 9px; font-size: 0.88rem; }
+  html.menu-mode .menu-btn { padding: 0 12px; }
+  .menu-txt { display: none; }
+}
+
+/* A hidden form field stays hidden even though .field sets display. */
+.demo-form .field[hidden] { display: none; }
+
+/* Phones: tighter hero label, a trainer that does not break words, shorter stacks. */
+.tr-stats dd { overflow-wrap: normal; }
+@media (max-width: 560px) {
+  .hero .eyebrow { font-size: 0.66rem; letter-spacing: 0.07em; padding: 6px 10px; }
+  .hero .facts { font-size: 0.92rem; gap: 6px 16px; }
+
+  /* What your child gets: icon beside the text instead of above it */
+  .benefits { gap: 12px; }
+  .benefits li { display: grid; grid-template-columns: 44px minmax(0, 1fr); column-gap: 14px; row-gap: 4px; padding: 16px; align-items: start; }
+  .benefits .b-ico { grid-row: 1 / span 2; width: 44px; height: 44px; font-size: 1.4rem; }
+  .benefits h3 { font-size: 1.02rem; align-self: center; }
+  .benefits p { grid-column: 2; font-size: 0.93rem; }
+
+  /* Puzzle trainer: three level buttons share one row; the puzzle tag gets a full row */
+  .tr-levels { align-self: stretch; flex-wrap: nowrap; }
+  .tr-level { flex: 1 1 0; padding: 9px 4px; font-size: 0.84rem; text-align: center; }
+  .tr-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .tr-stats div:last-child { grid-column: 1 / -1; }
+}
+@media (max-width: 640px) {
+  /* Levels and class plans: swipe sideways through the cards; the next one peeks in */
+  .levels, .plans {
+    display: flex; gap: 14px; overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
+    margin-inline: -20px; padding: 18px 20px 20px; scroll-padding-inline: 20px; scrollbar-width: none;
+  }
+  .levels::-webkit-scrollbar, .plans::-webkit-scrollbar { display: none; }
+  .levels > .level, .plans > .plan { flex: 0 0 85%; scroll-snap-align: start; }
+  .level:hover, .plan:hover { transform: none; }
+}
+@media (min-width: 561px) {
+  html.menu-mode header.menu-open nav.links a.nav-cta { display: none; }   /* the header button is still showing */
+}
+@media (max-width: 350px) {
+  header.site .wrap { padding-inline: 14px; gap: 8px; }
+  header.site .brand { font-size: 0.76rem; gap: 6px; }
+  .lang { padding: 6px 7px; font-size: 0.84rem; }
+}

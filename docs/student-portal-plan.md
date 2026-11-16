@@ -165,3 +165,19 @@ A `file://` open does not work: browsers block module scripts there.
   batch-level homework not tied to a class, Hindi labels.
 - Test ports: `PORTAL_FS_PORT` / `PORTAL_AUTH_PORT` let `portal.test.mjs` run beside
   emulators that are already up (the three edge files still use 8080 / 9099).
+
+## Demo requests (built 2026-11-17)
+- The free-assessment form on both home pages (`site/demo-form.js`, strings per page in
+  `window.DEMO_STRINGS`) now asks for the parent's name and WhatsApp number as well and
+  **saves the request** to `demoRequests/{id}` through Firestore's REST `documents:commit`
+  endpoint, so the public pages load no SDK. If the save fails, the parent gets the same
+  details as a ready WhatsApp message. A hidden "website" field catches simple bots.
+- **Rules**: anyone may create one well-formed request (fixed field list, age 4–15, mobile
+  10–15 digits, `status == 'new'`, `createdAt == request.time`); only the coach reads,
+  updates, deletes. **Needs the rules re-published in the console.**
+- **Coach**: "Demo requests (N)" tab, N = requests not opened yet; opening one marks it seen.
+  Details, "Reply on WhatsApp" (written reply), copy number, Mark contacted / Close / new
+  again / Delete. The desk still opens if the request list is refused (old rules).
+- Risk accepted: a public write can be flooded; the free plan then stops serving for the
+  day rather than billing. App Check (reCAPTCHA) is the next step if that ever happens.
+

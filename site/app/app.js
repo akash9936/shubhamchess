@@ -4,7 +4,7 @@ import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.14.1/fireba
 import * as fbAuth from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
 import * as fbStore from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
 import { firebaseConfig } from './firebase-config.js';
-import { makeApi, joinState, isHttpsUrl, istParts, JOIN_OPENS_MIN, CANCEL_CUTOFF_MIN, canCancel, studentStatus, attendanceSummary, percent, monthRangeIST, waLink, welcomeMessage, reminderMessage, parseHomeworkLinks, linkLabel, hasHomework, homeworkFor, HOMEWORK_MAX_TEXT, HOMEWORK_MAX_LINKS } from './core.js';
+import { makeApi, joinState, isHttpsUrl, istParts, JOIN_OPENS_MIN, CANCEL_CUTOFF_MIN, canCancel, studentStatus, attendanceSummary, percent, monthRangeIST, waLink, welcomeMessage, reminderMessage, newDemoCount, demoReplyMessage, parseHomeworkLinks, linkLabel, hasHomework, homeworkFor, HOMEWORK_MAX_TEXT, HOMEWORK_MAX_LINKS } from './core.js';
 
 const root = document.getElementById('app');
 const signoutBtn = document.getElementById('signout');
@@ -300,6 +300,8 @@ async function studentView(user, student) {
 // ---------- coach ----------
 async function coachView() {
   let tab = 'classes', students = [], series = [], sessions = [], notice = '';
+  let demos = [], demoProblem = false;
+  const demoOpen = new Set();
   const att = { month: istParts(Date.now()).date.slice(0, 7), batch: '', sessions: null };
   const nameOf = (id) => { const s = students.find((x) => x.id === id); return s ? s.nickname : 'removed'; };
   // Homework desk: classes from the last 3 weeks to the coming week; the form's values live
@@ -327,7 +329,10 @@ async function coachView() {
 
   const reload = async () => {
     const from = Date.now() - 3 * 3600000;
+    // Requests load on their own: a page newer than the published rules must still open.
+    const demoLoad = api.listDemoRequests().then((d) => { demos = d; demoProblem = false; }, (e) => { console.error(e); demoProblem = true; });
     [students, series, sessions] = await Promise.all([api.listStudents(), api.listSeries(), api.listSessionsBetween(from, from + 8 * DAY)]);
+    await demoLoad;
     draw();
   };
   const done = async (msg) => { notice = msg; await reload(); };
@@ -361,13 +366,13 @@ async function coachView() {
   };
 
   const draw = () => {
-    const tabs = [['classes', 'Classes'], ['students', 'Students (' + students.filter((s) => s.active).length + ')'], ['batches', 'Batches (' + series.length + ')'], ['attendance', 'Attendance'], ['homework', 'Homework']];
+    const tabs = [['classes', 'Classes'], ['students', 'Students (' + students.filter((s) => s.active).length + ')'], ['batches', 'Batches (' + series.length + ')'], ['attendance', 'Attendance'], ['homework', 'Homework'], ['demo', 'Demo requests' + (newDemoCount(demos) ? ' (' + newDemoCount(demos) + ')' : '')]];
     show(
       h('div', { class: 'p-head' }, h('div', {}, h('h1', {}, 'Coach desk'), h('p', {}, 'All times are India time.'))),
       h('div', { class: 'p-tabs', role: 'tablist' }, tabs.map(([id, label]) =>
-        h('button', { type: 'button', role: 'tab', 'aria-selected': String(tab === id), 'data-tab': id, onclick: () => { tab = id; notice = ''; draw(); if (id === 'attendance') loadAtt().catch(console.error); if (id === 'homework') loadHw().catch(console.error); } }, label))),
+        h('button', { type: 'button', role: 'tab', class: id === 'demo' && newDemoCount(demos) ? 'has-new' : null, 'aria-selected': String(tab === id), 'data-tab': id, onclick: () => { tab = id; notice = ''; draw(); if (id === 'attendance') loadAtt().catch(console.error); if (id === 'homework') loadHw().catch(console.error); } }, label))),
       notice ? h('p', { class: 'p-ok', id: 'notice', style: 'margin-bottom:14px' }, notice) : null,
-      tab === 'classes' ? classesTab() : tab === 'students' ? studentsTab() : tab === 'batches' ? batchesTab() : tab === 'homework' ? homeworkTab() : attendanceTab());
+      tab === 'classes' ? classesTab() : tab === 'students' ? studentsTab() : tab === 'batches' ? batchesTab() : tab === 'homework' ? homeworkTab() : tab === 'demo' ? demoTab() : attendanceTab());
   };
 
   // ----- classes: today and the next 7 days -----
@@ -481,6 +486,52 @@ async function coachView() {
   };
 
   // ----- homework: written on one class, seen by every student of that class -----
+  // ----- free-assessment requests from the home page -----
+  const DEMO_PILL = { new: ['New', ' live'], seen: ['Seen', ''], contacted: ['Contacted', ''], closed: ['Closed', ' off'] };
+  const demoTab = () => {
+    if (demoProblem) return h('div', { class: 'p-card' }, h('h2', {}, 'Demo requests'),
+      h('p', { class: 'p-error' }, 'The requests could not be loaded. If this was just set up, the database rules may still be the old ones.'));
+    if (!demos.length) return h('div', { class: 'p-card' }, h('h2', {}, 'Demo requests'),
+      h('p', { class: 'p-sub' }, 'No requests yet. They arrive here when a parent fills the free assessment form on the home page.'));
+    const err = h('p', { class: 'p-error' });
+    const setStatus = async (r, status) => { await api.setDemoStatus(r.id, status); r.status = status; draw(); };
+    return h('div', { class: 'p-card' }, h('h2', {}, 'Demo requests'),
+      h('p', { class: 'p-sub' }, 'From the free assessment form on the home page. Open a request to see the number; opening it clears it from the count.'), err,
+      demos.map((r) => {
+        const received = fmt({ day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit', hour12: true }, 'Asia/Kolkata').format(r.createdAtMs);
+        const reply = waLink(r.mobile, demoReplyMessage(r));
+        const copied = h('span', { class: 'p-ok' });
+        let armed = false;
+        const [label, cls] = DEMO_PILL[r.status] || DEMO_PILL.seen;
+        return h('details', { class: 'p-more p-att p-demo', 'data-demo': r.childName, open: demoOpen.has(r.id),
+          ontoggle: (e) => {
+            if (!e.target.open) { demoOpen.delete(r.id); return; }
+            if (demoOpen.has(r.id)) return;
+            demoOpen.add(r.id);
+            if (r.status === 'new') setStatus(r, 'seen').catch((x) => { err.textContent = friendly(x); });
+          } },
+          h('summary', {}, r.childName + ', ' + r.age + ' \u00b7 ' + received + ' ', h('span', { class: 'p-pill' + cls }, label)),
+          h('dl', { class: 'p-facts' },
+            h('dt', {}, 'Child'), h('dd', {}, r.childName + ', age ' + r.age),
+            h('dt', {}, 'Played before'), h('dd', {}, r.played),
+            h('dt', {}, 'Preferred time'), h('dd', {}, r.preferredTime),
+            h('dt', {}, 'Parent'), h('dd', {}, r.parentName),
+            h('dt', {}, 'Mobile'), h('dd', { class: 'p-codebox' }, r.mobile),
+            h('dt', {}, 'Received'), h('dd', {}, received + ' India time' + (r.lang === 'hi' ? ' \u00b7 from the Hindi page' : ''))),
+          h('div', { class: 'p-actions' },
+            reply ? h('a', { class: 'btn primary small', href: reply, target: '_blank', rel: 'noopener' }, 'Reply on WhatsApp') : h('span', { class: 'p-sub' }, 'Number looks wrong'),
+            action('Copy number', 'p-link', async () => { await navigator.clipboard.writeText(r.mobile); copied.textContent = 'Copied'; }, err), copied),
+          h('div', { class: 'p-actions', style: 'margin-top:10px' },
+            r.status !== 'contacted' ? action('Mark contacted', 'p-link', () => setStatus(r, 'contacted'), err) : null,
+            r.status !== 'closed' ? action('Close', 'p-link', () => setStatus(r, 'closed'), err) : null,
+            r.status !== 'new' ? action('Mark as new again', 'p-link', async () => { demoOpen.delete(r.id); await setStatus(r, 'new'); }, err) : null,
+            action('Delete', 'p-link p-danger', async (btn) => {
+              if (!armed) { armed = true; btn.textContent = 'Press again to delete this request'; return; }
+              await api.deleteDemoRequest(r.id); demos = demos.filter((x) => x.id !== r.id); draw();
+            }, err)));
+      }));
+  };
+
   const homeworkTab = () => {
     if (!series.length) return h('div', { class: 'p-card' }, h('h2', {}, 'Homework'), h('p', { class: 'p-sub' }, 'Add a batch first. Homework is set on a class of a batch.'));
     if (!hw.sessions) return h('div', { class: 'p-card' }, h('h2', {}, 'Homework'), h('p', { class: 'p-loading' }, 'Loading…'));

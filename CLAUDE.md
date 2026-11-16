@@ -123,8 +123,10 @@ The rules the page is written to. Feedback from Akash changes this list, never j
   card, coach cards, guides, picker result aside) goes to `#demo`, the contact form, which
   composes the WhatsApp message from the child's details; the first field is focused on
   arrival. Direct wa.me links remain only on the floating button, the contact-block number
-  and the lessons/plans sub-line. No stored forms or payments; the only login is the
-  student portal at `/app/`, which is its own page and not a call to action.
+  and the lessons/plans sub-line. Since 2026-11-17 that form **saves the request** (child, age,
+  played before, preferred time, parent name, WhatsApp number) for the coach's "Demo requests"
+  tab and falls back to a ready WhatsApp message only if saving fails (`site/demo-form.js`,
+  shared by EN + HI). No payments; the only login is the student portal at `/app/`.
 - **Public prices = one starting-from figure per format** (group ₹1,500 · pair ₹3,000 ·
   one-to-one ₹4,500 per month), on the card and in the FAQ, with "exact fee shared in the
   free assessment class". The 3/6-month totals stay in the gitignored
@@ -186,6 +188,14 @@ The rules the page is written to. Feedback from Akash changes this list, never j
   and streak in localStorage only; `puzzle_solved` GA event. Test it headless with a probe
   that clicks squares (see NOTES → Verifying).
 - **Phone first.** 16 px side gutters, no horizontal scroll, board usable with a thumb.
+  **Header is one row at every width** (11-17): brand and buttons never wrap. On narrow
+  screens `nav.js` puts the header links behind a Menu button (panel of 48 px rows plus the
+  free-assessment button) and hides the jump bar; the switch is at 1100 px on the home pages
+  (nine links) and 760 px on guides (five). Without JS the old jump bar still shows. A new
+  header link needs no extra markup: the panel is the same `nav.links`. Phone-only layout
+  lives in the "Phone layer" at the foot of `styles.css`: benefits as icon-beside-text rows,
+  levels and class plans as a sideways swipe row (next card peeks in), trainer level buttons
+  on one row. Check phone changes at 320, 360 and 390 px, menu open and closed.
 - **Visual layer (11-11)**: the bottom of `styles.css` is an override layer that makes the
   site "attractive" per Akash — gradient amber buttons, soft shadows + hover lift on every
   card, alternating section backgrounds, eyebrow knight glyph + gradient underline on h2,
@@ -501,4 +511,23 @@ When Akash gives feedback on the site, the copy, the design, or how this project
 - 2026-11-17 — Akash: highlight the "Open link" button so it is visible. → On the coach's Classes
   tab it is now the amber primary button, not a text link. Rule: the one thing the coach does
   most on a row (open the class) is a button; secondary actions stay text links.
-
+- 2026-11-17 — Akash: the home-page form should take the parent's mobile and details, save to the
+  database on "book a demo", and the coach should get a "Demo requests" tab with a count of
+  unopened ones. → Built on EN + HI: form saves via Firestore REST (no SDK on public pages),
+  thank-you panel, WhatsApp fallback; coach tab with count, details, written WhatsApp reply and
+  statuses. Button and heading keep Shubham's wording "free assessment"; the coach tab says "Demo
+  requests" as Akash called it. The "Nothing is stored on this site" line is gone (it would now be
+  false) and replaced by what the details are used for. Rule: a public form that stores anything
+  says so next to the button.
+- 2026-11-17 — Akash: the form field should read "Your mobile number", not "Your WhatsApp number".
+  → Label, lede, error and thank-you text changed on EN + HI (मोबाइल नंबर); the coach tab row
+  reads "Mobile". Rule: on public pages ask for a "mobile number"; WhatsApp is how we reply, not
+  what we call the field.
+- 2026-11-17 — Akash: "optimise this website for mobile… all the top menu is not proper… on laptop
+  it looks fine." → Header was three lines of brand, a two-line button and no menu on a phone.
+  Now one row with a Menu button (`site/nav.js`, loaded on the two home pages and three guides);
+  jump bar retired where the menu runs. Also: benefits compacted, levels and plans swipe
+  sideways, trainer tabs and puzzle tag no longer wrap or break mid-word, hero label fits one
+  line, and the booking form's hidden "Website" trap field no longer shows (`.field` was
+  overriding `hidden`). Home page 20,675 → 17,380 px tall at 390 px; desktop unchanged. CSS
+  v=20261117p. Rule added under Phone first.

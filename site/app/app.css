@@ -107,3 +107,10 @@ details.p-att:first-of-type { margin-top: 12px; }
 /* WhatsApp send lines */
 .p-send { gap: 6px 14px; }
 .p-send-name { font-weight: 700; min-width: 5.5em; }
+
+/* demo requests */
+.p-tabs button.has-new:not([aria-selected="true"]) { border-color: var(--clock); box-shadow: inset 0 0 0 1px var(--clock); }
+details.p-demo > summary .p-pill { margin-left: 6px; vertical-align: 2px; }
+.p-facts { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 6px 16px; margin: 0 0 14px; }
+.p-facts dt { color: var(--muted); font-size: 0.86rem; }
+.p-facts dd { margin: 0; justify-self: start; overflow-wrap: anywhere; }

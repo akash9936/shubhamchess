@@ -288,6 +288,54 @@ test('rules: who can read and write what', async () => {
   await assertSucceeds(deleteDoc(doc(coach, 'sessions/forB')));
 });
 
+test('rules: anyone can file one well-formed demo request; only the coach can read them', async () => {
+  const { doc, getDoc, setDoc, updateDoc, deleteDoc, getDocs, collection, serverTimestamp, Timestamp } = fbStore;
+  await env.clearFirestore();
+  await env.withSecurityRulesDisabled(async (ctx) => {
+    const db = ctx.firestore();
+    await setDoc(doc(db, 'config/coach'), { uid: 'coach1' });
+    await setDoc(doc(db, 'students/kidA'), { fullName: 'Kid A', nickname: 'A', active: true });
+  });
+  const anon = env.unauthenticatedContext().firestore(), kid = env.authenticatedContext('kidA').firestore(), coach = env.authenticatedContext('coach1').firestore();
+  const good = () => ({ childName: 'Aarav', age: 8, played: 'Never', preferredTime: 'Weekends', parentName: 'Riya Sharma', mobile: '+919876543210', lang: 'en', status: 'new', createdAt: serverTimestamp() });
+  await assertSucceeds(setDoc(doc(anon, 'demoRequests/r1'), good()));
+  await assertSucceeds(setDoc(doc(kid, 'demoRequests/r2'), { ...good(), lang: 'hi', mobile: '9876543210' }));
+  const bad = { status: 'contacted', age: 3, age2: 16, ageText: '8', mobile: '12345', mobileText: 'call me', childName: '', long: 'x'.repeat(41), lang: 'fr' };
+  await assertFails(setDoc(doc(anon, 'demoRequests/b1'), { ...good(), status: bad.status }));
+  await assertFails(setDoc(doc(anon, 'demoRequests/b2'), { ...good(), age: bad.age }));
+  await assertFails(setDoc(doc(anon, 'demoRequests/b3'), { ...good(), age: bad.age2 }));
+  await assertFails(setDoc(doc(anon, 'demoRequests/b4'), { ...good(), age: bad.ageText }));
+  await assertFails(setDoc(doc(anon, 'demoRequests/b5'), { ...good(), mobile: bad.mobile }));
+  await assertFails(setDoc(doc(anon, 'demoRequests/b6'), { ...good(), mobile: bad.mobileText }));
+  await assertFails(setDoc(doc(anon, 'demoRequests/b7'), { ...good(), childName: bad.childName }));
+  await assertFails(setDoc(doc(anon, 'demoRequests/b8'), { ...good(), childName: bad.long }));
+  await assertFails(setDoc(doc(anon, 'demoRequests/b9'), { ...good(), lang: bad.lang }));
+  await assertFails(setDoc(doc(anon, 'demoRequests/b10'), { ...good(), createdAt: Timestamp.fromMillis(5) }));
+  await assertFails(setDoc(doc(anon, 'demoRequests/b11'), { ...good(), note: 'extra field' }));
+  const { parentName, ...missing } = good();
+  await assertFails(setDoc(doc(anon, 'demoRequests/b12'), missing));
+  await assertFails(setDoc(doc(anon, 'demoRequests/r1'), good()), 'an existing request cannot be overwritten');
+  // nobody but the coach reads, changes or deletes
+  for (const who of [anon, kid]) {
+    await assertFails(getDoc(doc(who, 'demoRequests/r1')));
+    await assertFails(getDocs(collection(who, 'demoRequests')));
+    await assertFails(updateDoc(doc(who, 'demoRequests/r1'), { status: 'closed' }));
+    await assertFails(deleteDoc(doc(who, 'demoRequests/r1')));
+  }
+  assert.equal((await assertSucceeds(getDocs(collection(coach, 'demoRequests')))).size, 2);
+  await assertSucceeds(updateDoc(doc(coach, 'demoRequests/r1'), { status: 'contacted' }));
+  await assertSucceeds(deleteDoc(doc(coach, 'demoRequests/r2')));
+});
+
+test('demo requests: unopened first, count, reply text', () => {
+  const list = [{ id: 'a', status: 'seen', createdAtMs: 30 }, { id: 'b', status: 'new', createdAtMs: 10 }, { id: 'c', status: 'new', createdAtMs: 20 }, { id: 'd', status: 'closed', createdAtMs: 40 }];
+  assert.deepEqual(core.sortDemoRequests(list).map((r) => r.id), ['c', 'b', 'd', 'a']);
+  assert.equal(core.newDemoCount(list), 2);
+  assert.equal(core.newDemoCount([]), 0);
+  assert.equal(core.demoReplyMessage({ parentName: 'Riya', childName: 'Aarav' }),
+    'Hello Riya, this is Shubham from Shubham Chess Academy. Thank you for booking a free assessment class for Aarav. Which day and time would suit you for the class?');
+});
+
 // ---------- 3. the data layer, end to end ----------
 
 function client(name) {

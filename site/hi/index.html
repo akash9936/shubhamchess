@@ -16,7 +16,7 @@
 <link rel="alternate" hreflang="hi" href="https://shubhamchessacademy.com/hi/">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&family=DM+Mono:wght@400;500&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="../styles.css?v=20261117c">
+<link rel="stylesheet" href="../styles.css?v=20261117p">
 <style>
   body, .btn, .lang { font-family: "Noto Sans Devanagari", "Figtree", system-ui, sans-serif; }
   h1, h2, h3, .brand, .statgrid dd { font-family: "Noto Sans Devanagari", "Bricolage Grotesque", system-ui, sans-serif; }
@@ -372,15 +372,19 @@
     <div class="wrap">
       <div class="contact-copy">
         <span class="eyebrow">मुफ़्त असेसमेंट क्लास</span>
-        <h2>WhatsApp पर मुफ़्त असेसमेंट बुक करें</h2>
-        <p class="lede">बच्चे की उम्र और क्या उसने पहले खेला है, यह भेजें। शुभम समय बताएँगे। असेसमेंट एक लाइव क्लास है जिससे पता चलता है कि बच्चा कहाँ है और कौन-सा लेवल ठीक रहेगा। असेसमेंट की सीटें सीमित हैं।</p>
+        <h2>मुफ़्त असेसमेंट क्लास बुक करें</h2>
+        <p class="lede">बच्चे की उम्र और क्या उसने पहले खेला है, यह बताएँ और अपना मोबाइल नंबर दें। शुभम समय बताएँगे। असेसमेंट एक लाइव क्लास है जिससे पता चलता है कि बच्चा कहाँ है और कौन-सा लेवल ठीक रहेगा। असेसमेंट की सीटें सीमित हैं।</p>
         <form class="demo-form" id="demo-form">
-          <div class="field"><label for="df-name">बच्चे का नाम</label><input id="df-name" name="name" type="text" autocomplete="off" placeholder="जैसे आरव"></div>
-          <div class="field"><label for="df-age">उम्र</label><input id="df-age" name="age" type="number" min="4" max="15" inputmode="numeric" placeholder="4 से 15"></div>
-          <div class="field"><label for="df-exp">पहले खेला है?</label><select id="df-exp" name="exp"><option>कभी नहीं</option><option>चालें जानता है</option><option>नियमित खेलता है</option><option>टूर्नामेंट खेलता है</option></select></div>
-          <div class="field"><label for="df-time">पसंदीदा समय</label><select id="df-time" name="time"><option>हफ़्ते के दिन, शाम</option><option>हफ़्ते के दिन, सुबह</option><option>वीकेंड</option><option>कोई भी</option></select></div>
-          <button class="btn primary" type="submit" data-loc="form">WhatsApp पर संदेश भेजें</button>
-          <p class="note" style="margin-top:4px">इससे WhatsApp खुलेगा और संदेश तैयार मिलेगा। इस साइट पर कुछ भी सेव नहीं होता।</p>
+          <div class="field"><label for="df-name">बच्चे का नाम</label><input id="df-name" name="name" type="text" autocomplete="off" placeholder="जैसे आरव" maxlength="40" required></div>
+          <div class="field"><label for="df-age">उम्र</label><input id="df-age" name="age" type="number" min="4" max="15" inputmode="numeric" placeholder="4 से 15" required></div>
+          <div class="field"><label for="df-exp">पहले खेला है?</label><select id="df-exp" name="exp"><option value="Never">कभी नहीं</option><option value="Knows the moves">चालें जानता है</option><option value="Plays regularly">नियमित खेलता है</option><option value="Plays tournaments">टूर्नामेंट खेलता है</option></select></div>
+          <div class="field"><label for="df-time">पसंदीदा समय</label><select id="df-time" name="time"><option value="Weekday evenings">हफ़्ते के दिन, शाम</option><option value="Weekday mornings">हफ़्ते के दिन, सुबह</option><option value="Weekends">वीकेंड</option><option value="Flexible">कोई भी</option></select></div>
+          <div class="field"><label for="df-parent">आपका नाम</label><input id="df-parent" name="parent" type="text" autocomplete="name" maxlength="60" required></div>
+          <div class="field"><label for="df-mobile">आपका मोबाइल नंबर</label><input id="df-mobile" name="mobile" type="tel" autocomplete="tel" inputmode="tel" placeholder="+91 98765 43210" maxlength="20" required></div>
+          <div class="field" hidden aria-hidden="true"><label for="df-website">Website</label><input id="df-website" name="website" type="text" tabindex="-1" autocomplete="off"></div>
+          <button class="btn primary" type="submit" data-loc="form">मुफ़्त असेसमेंट बुक करें</button>
+          <p class="note" id="demo-msg" role="alert" style="color:var(--rose)" hidden></p>
+          <p class="note" style="margin-top:4px">यह जानकारी सिर्फ़ क्लास के लिए आपसे संपर्क करने में काम आती है। ख़ुद लिखना चाहें तो <a href="https://wa.me/918223820430" target="_blank" rel="noopener">WhatsApp पर संदेश भेजें</a>।</p>
         </form>
       </div>
       <dl class="ways">
@@ -431,14 +435,10 @@
     root.addEventListener("touchend", function (e) { if (x0 === null) return; var dx = e.changedTouches[0].clientX - x0; if (Math.abs(dx) > 40) show(i + (dx < 0 ? 1 : -1)); x0 = null; start(); }, { passive: true });
     show(0); start();
   })();
-  var dform = document.getElementById("demo-form");
-  dform.addEventListener("submit", function (e) {
-    e.preventDefault();
-    var fd = new FormData(dform), name = (fd.get("name") || "").toString().trim(), age = (fd.get("age") || "").toString().trim();
-    var text = "नमस्ते, मैं अपने बच्चे" + (name ? " " + name : "") + (age ? " (उम्र " + age + ")" : "") + " के लिए मुफ़्त चेस असेसमेंट क्लास बुक करना चाहता/चाहती हूँ। पहले खेला: " + fd.get("exp") + "। पसंदीदा समय: " + fd.get("time") + "।";
-    window.open("https://wa.me/918223820430?text=" + encodeURIComponent(text), "_blank", "noopener");
-  });
 })();
 </script>
+<script>window.DEMO_STRINGS={lang:"hi",needNames:"कृपया बच्चे का नाम और अपना नाम लिखें।",needAge:"हम 4 से 15 साल के बच्चों को सिखाते हैं। कृपया बच्चे की उम्र लिखें।",needMobile:"कृपया अपना पूरा मोबाइल नंबर लिखें।",failed:"अभी आपकी जानकारी सेव नहीं हो पाई। कृपया इसे WhatsApp पर भेज दें:",waLinkLabel:"WhatsApp पर संदेश भेजें",waText:"Hi, I would like to book a free chess assessment class for {child} (age {age}). {played} before. Preferred time: {time}. My name is {parent}.",doneTitle:"धन्यवाद। आपकी जानकारी हमें मिल गई।",doneBody:"शुभम {child} की मुफ़्त असेसमेंट क्लास का समय बताने के लिए {mobile} पर संपर्क करेंगे।"};</script>
+<script src="../demo-form.js?v=20261117a"></script>
+<script src="../nav.js?v=20261117a" defer></script>
 </body>
 </html>

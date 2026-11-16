@@ -274,6 +274,21 @@ export function reminderMessage(student, session) {
   ].join('\n');
 }
 
+// ---------- free-assessment requests ----------
+
+export const DEMO_STATUSES = ['new', 'seen', 'contacted', 'closed'];
+export const newDemoCount = (list) => list.filter((r) => r.status === 'new').length;
+
+// Unopened first, then newest first.
+export function sortDemoRequests(list) {
+  return [...list].sort((a, b) => (a.status === 'new' ? 0 : 1) - (b.status === 'new' ? 0 : 1) || b.createdAtMs - a.createdAtMs);
+}
+
+export function demoReplyMessage(r) {
+  return 'Hello ' + r.parentName + ', this is Shubham from Shubham Chess Academy. Thank you for booking a free assessment class for '
+    + r.childName + '. Which day and time would suit you for the class?';
+}
+
 // ---------- data layer ----------
 
 const BATCH_LIMIT = 400;
@@ -464,6 +479,17 @@ export function makeApi({ fb, auth, db, secondaryAuth }) {
       await commitInChunks(ops);
       return future.length;
     },
+
+    // ----- free-assessment requests (coach) -----
+    async listDemoRequests() {
+      const snap = await fb.getDocs(fb.query(col('demoRequests'), fb.orderBy('createdAt', 'desc'), fb.limit(200)));
+      return sortDemoRequests(rows(snap).map((r) => ({ ...r, createdAtMs: r.createdAt ? r.createdAt.toMillis() : 0 })));
+    },
+    async setDemoStatus(id, status) {
+      if (!DEMO_STATUSES.includes(status)) throw Object.assign(new Error('Unknown status.'), { code: 'portal/invalid' });
+      await fb.updateDoc(ref('demoRequests', id), { status });
+    },
+    deleteDemoRequest: (id) => fb.deleteDoc(ref('demoRequests', id)),
 
     // ----- classes -----
     async listSessionsBetween(fromMs, toMs) {           // coach
