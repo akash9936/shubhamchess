@@ -225,7 +225,7 @@ describe('istToUtcMs', () => {
     for (const [d, t] of bad) assert.ok(Number.isNaN(core.istToUtcMs(d, t)), `${d} ${t}`);
   });
 
-  test('impossible calendar dates and clock times are refused', { todo: 'istToUtcMs checks only the shape: 2026-02-30 rolls over to 2 March and 24:00 / 17:60 are accepted' }, () => {
+  test('impossible calendar dates and clock times are refused', () => {
     for (const [d, t] of [['2026-02-30', '10:00'], ['2027-02-29', '10:00'], ['2026-13-01', '10:00'], ['2026-11-00', '10:00'],
       ['2026-11-16', '24:00'], ['2026-11-16', '17:60']]) {
       assert.ok(Number.isNaN(core.istToUtcMs(d, t)), `${d} ${t}`);
@@ -379,7 +379,7 @@ describe('validateSeries', () => {
     }
   });
 
-  test('an impossible start date is refused', { todo: 'validateSeries relies on istToUtcMs, which accepts 2026-02-30 (rolls over to 2 March)' }, () => {
+  test('an impossible start date is refused', () => {
     assert.match(core.validateSeries(makeSeries({ startDate: '2026-02-30' })) || '', /start date/);
   });
 });

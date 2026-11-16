@@ -57,7 +57,11 @@ export function istToUtcMs(dateStr, timeStr) {
   const d = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateStr || '');
   const t = /^(\d{1,2}):(\d{2})$/.exec(timeStr || '');
   if (!d || !t) return NaN;
-  return Date.UTC(+d[1], +d[2] - 1, +d[3], +t[1], +t[2]) - IST_OFFSET_MS;
+  if (+t[1] > 23 || +t[2] > 59) return NaN;
+  const utc = Date.UTC(+d[1], +d[2] - 1, +d[3], +t[1], +t[2]);
+  const back = new Date(utc);                 // 30 Feb would roll into March: refuse it
+  if (back.getUTCMonth() !== +d[2] - 1 || back.getUTCDate() !== +d[3]) return NaN;
+  return utc - IST_OFFSET_MS;
 }
 
 export function istParts(ms) {
@@ -155,6 +159,121 @@ export function monthRangeIST(month) {
   return { fromMs: istToUtcMs(month + '-01', '00:00'), toMs: istToUtcMs(next + '-01', '00:00') };
 }
 
+// ---------- homework ----------
+
+export const HOMEWORK_MAX_TEXT = 1000;
+export const HOMEWORK_MAX_LINKS = 5;
+export const HOMEWORK_SHOWN_DAYS = 30;        // a student sees homework from classes this recent
+
+// The coach types links one per line (spaces also separate them).
+export const parseHomeworkLinks = (input) => String(input || '').split(/\s+/).filter(Boolean);
+
+export function validateHomework({ text, links }) {
+  const t = String(text || '').trim();
+  const list = links || [];
+  if (!t && !list.length) return 'Write the homework or add a link.';
+  if (t.length > HOMEWORK_MAX_TEXT) return 'Keep the homework under ' + HOMEWORK_MAX_TEXT + ' characters.';
+  if (list.length > HOMEWORK_MAX_LINKS) return 'Add at most ' + HOMEWORK_MAX_LINKS + ' links.';
+  const bad = list.find((u) => !isHttpsUrl(u));
+  if (bad) return 'Every link must start with https:// (check: ' + String(bad).slice(0, 40) + ')';
+  return null;
+}
+
+// What the student's button says for a link.
+export function linkLabel(url) {
+  let u;
+  try { u = new URL(url); } catch (e) { return 'Open link'; }
+  const host = u.hostname.replace(/^www\./, '');
+  if (host === 'lichess.org') return u.pathname.startsWith('/study') ? 'Lichess study' : /^\/(training|puzzle)/.test(u.pathname) ? 'Lichess puzzle' : 'Lichess';
+  if (/\.pdf$/i.test(u.pathname)) return 'PDF';
+  if (host === 'drive.google.com' || host === 'docs.google.com') return 'Google Drive file';
+  if (host === 'youtube.com' || host === 'youtu.be') return 'Video';
+  if (host === 'chess.com') return 'Chess.com';
+  return host;
+}
+
+export const hasHomework = (session) =>
+  !!session.homework && !!(session.homework.text || (session.homework.links || []).length);
+
+// A student's homework list: recent classes that carry homework, still-to-do first,
+// then newest class first.
+export function homeworkFor(sessions, uid, nowMs) {
+  const done = (s) => ((s.homeworkDone || {})[uid] ? 1 : 0);
+  return sessions
+    .filter((s) => hasHomework(s) && s.status !== 'cancelled' && s.startsAtMs >= nowMs - HOMEWORK_SHOWN_DAYS * 86400000)
+    .sort((a, b) => done(a) - done(b) || b.startsAtMs - a.startsAtMs);
+}
+
+// ---------- WhatsApp messages (the coach presses send himself) ----------
+
+export const PORTAL_URL = 'https://shubhamchessacademy.com/app/';
+const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+// Digits for wa.me. Ten digits are taken as an Indian mobile; anything else must already
+// carry its country code. Returns null when it cannot be a phone number.
+export function waNumber(mobile) {
+  let d = String(mobile || '').replace(/\D/g, '');
+  if (d.startsWith('00')) d = d.slice(2);
+  if (d.length === 11 && d.startsWith('0')) d = d.slice(1);
+  if (d.length === 10) return '91' + d;
+  return d.length >= 11 && d.length <= 15 ? d : null;
+}
+
+export function waLink(mobile, text) {
+  const n = waNumber(mobile);
+  return n ? 'https://wa.me/' + n + '?text=' + encodeURIComponent(text) : null;
+}
+
+export function time12(hhmm) {
+  const [h, m] = hhmm.split(':').map(Number);
+  return (h % 12 || 12) + ':' + String(m).padStart(2, '0') + (h < 12 ? ' am' : ' pm');
+}
+
+export function dayLabel(ms) {              // "Monday 23 Nov", India calendar
+  const p = istParts(ms);
+  const [, m, d] = p.date.split('-').map(Number);
+  return DAY_NAMES[p.weekday] + ' ' + d + ' ' + MONTH_NAMES[m - 1];
+}
+
+export function daysText(weekdays) {        // "Mon and Thu", "Mon, Wed and Fri"
+  const names = [...weekdays].map(Number).sort((a, b) => a - b).map((d) => DAY_NAMES[d].slice(0, 3));
+  return names.length < 2 ? names.join('') : names.slice(0, -1).join(', ') + ' and ' + names[names.length - 1];
+}
+
+// The batch's next class from its weekly pattern (does not know about one-off changes).
+export function nextClassMs(series, nowMs) {
+  const today = istParts(nowMs).date;
+  const from = series.startDate > today ? series.startDate : today;
+  const slot = expandSeries({ ...series, startDate: from, weeks: 2 }).find((x) => x.startsAtMs > nowMs);
+  return slot ? slot.startsAtMs : null;
+}
+
+// Neither message carries the meeting link (Akash, 2026-11-17): the child joins from the
+// login page, so the Join press is recorded.
+export function welcomeMessage(student, series, nowMs) {
+  const next = nextClassMs(series, nowMs);
+  return [
+    'Hello! ' + student.nickname + '\u2019s chess classes with Shubham Chess Academy are set.',
+    'Batch: ' + series.name,
+    'Days: ' + daysText(series.weekdays) + ', ' + time12(series.startTime) + ' India time (' + series.durationMin + ' minutes)',
+    next ? 'Next class: ' + dayLabel(next) : null,
+    '',
+    'Student login: ' + PORTAL_URL,
+    'Access code: ' + student.accessCode,
+    'Open the login page 10 minutes before the class and press Join.',
+  ].filter((line) => line !== null).join('\n');
+}
+
+export function reminderMessage(student, session) {
+  return [
+    'Reminder: ' + student.nickname + '\u2019s chess class (' + session.seriesName + ') is on ' + dayLabel(session.startsAtMs) + ' at ' + time12(istParts(session.startsAtMs).time) + ' India time.',
+    '',
+    'Join from the student login: ' + PORTAL_URL,
+    'Access code: ' + student.accessCode,
+  ].join('\n');
+}
+
 // ---------- data layer ----------
 
 const BATCH_LIMIT = 400;
@@ -172,6 +291,8 @@ export function makeApi({ fb, auth, db, secondaryAuth }) {
     joins: s.joins || {},
     absences: s.absences || {},
     attendance: s.attendance || {},
+    homework: s.homework ? { text: s.homework.text || '', links: s.homework.links || [] } : null,
+    homeworkDone: s.homeworkDone || {},
   });
   const byStart = (a, b) => a.startsAtMs - b.startsAtMs;
 
@@ -273,6 +394,8 @@ export function makeApi({ fb, auth, db, secondaryAuth }) {
     },
 
     setStudentActive: (id, active) => fb.updateDoc(ref('students', id), { active: !!active }),
+    updateStudentContact: (id, { mobile, email }) =>
+      fb.updateDoc(ref('students', id), { mobile: String(mobile || '').trim(), email: String(email || '').trim() }),
 
     // ----- batches (coach) -----
     async listSeries() {
@@ -362,7 +485,7 @@ export function makeApi({ fb, auth, db, secondaryAuth }) {
         if (!isHttpsUrl(patch.link)) throw Object.assign(new Error('The meeting link must start with https://'), { code: 'portal/invalid' });
         next.link = patch.link.trim();
       }
-      if (patch.date && patch.time) {
+      if (patch.date || patch.time) {
         const startMs = istToUtcMs(patch.date, patch.time);
         if (Number.isNaN(startMs)) throw Object.assign(new Error('Set both the date and the time.'), { code: 'portal/invalid' });
         next.startsAt = ts(startMs);
@@ -385,5 +508,22 @@ export function makeApi({ fb, auth, db, secondaryAuth }) {
     // Coach's own mark for one student: 'present', 'absent', or null to go back to automatic.
     markAttendance: (session, uid, value) =>
       fb.updateDoc(ref('sessions', session.id), { ['attendance.' + uid]: value || fb.deleteField() }),
+
+    // ----- homework -----
+    // Coach: text plus https links on one class. Every student of that class sees it.
+    // Ticks already made stay when the homework is edited.
+    async setHomework(session, { text, links }) {
+      const hw = { text: String(text || '').trim(), links: (links || []).map((u) => String(u).trim()).filter(Boolean) };
+      const problem = validateHomework(hw);
+      if (problem) throw Object.assign(new Error(problem), { code: 'portal/invalid' });
+      await fb.updateDoc(ref('sessions', session.id), { homework: { ...hw, setAt: fb.serverTimestamp() } });
+      return hw;
+    },
+    clearHomework: (session) =>
+      fb.updateDoc(ref('sessions', session.id), { homework: fb.deleteField(), homeworkDone: {} }),
+
+    // Student: own "done" tick, on or off.
+    setHomeworkDone: (session, uid, done) =>
+      fb.updateDoc(ref('sessions', session.id), { ['homeworkDone.' + uid]: done ? fb.serverTimestamp() : fb.deleteField() }),
   };
 }

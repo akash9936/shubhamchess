@@ -38,7 +38,8 @@ says go. This is the agreed shape so the discussion is not repeated.
 ## Security rules (plain language)
 - Coach uid: read/write everything.
 - A student: read own `students/{id}` doc and `sessions` where `studentIds` contains own id;
-  may write only `sessions/{id}.joins.<ownId>` (the join timestamp). Nothing else.
+  may write only `sessions/{id}.joins.<ownId>` (the join timestamp) and, until 2 hours
+  before the start, their own `absences.<ownId>` note. Nothing else.
 - Unauthenticated: nothing. Rules get unit tests (Firebase emulator) before go-live.
 
 ## Screens (one page, `/app/`, same stylesheet)
@@ -71,7 +72,8 @@ serving rather than billing if the free tier is ever exceeded (we stay on the no
   exists**: the page then says "not open yet"). Firebase JS SDK 10.14.1 loads from gstatic.
 - `firebase/` (not deployed) — `firestore.rules` and `tests/portal.test.mjs`: logic, the
   rules, and the real data layer signed in as coach and students. `npm test` there (Node 22,
-  Java 11+) runs them on the emulators. 7 of 7 pass.
+  Java 11+) runs them on the emulators, plus three edge-case files added 11-17
+  (`core.edge`, `rules.edge`, `api.edge`): 196 tests in all.
 - Not linked from the home page yet. Add a "Student login" link in the footer once it is on.
 - Not done: Hindi labels, the WhatsApp "copy today's schedule" button, emulator-free check on
   the real project.
@@ -123,3 +125,18 @@ A `file://` open does not work: browsers block module scripts there.
   copy, spreadsheet (CSV) download.
 - **Out**: automatic notice to the coach, make-up scheduling (a one-off class button is the
   follow-up), attendance for classes before the portal existed.
+
+## WhatsApp send buttons (built 2026-11-17)
+- No server: the coach desk writes the message and opens `wa.me/<number>?text=…`; Shubham
+  presses send himself. One parent per press (each child has a different code); "Copy
+  message" is there for groups and for students with no number saved.
+- **Neither message carries the meeting link** (Akash, 2026-11-17): login link + access code
+  only, so the child joins from the portal and the Join press is recorded.
+- Batch card, per student: class details (batch, days, time, next class, login, code).
+  Class row, per student: reminder (date, time, login, code); hidden once the class is
+  cancelled or over.
+- Number: ten digits = Indian (+91 added); otherwise it must carry the country code.
+  Editable later from the student card ("Change WhatsApp number or email").
+- Wording lives in `welcomeMessage` / `reminderMessage` in `core.js`; `PORTAL_URL` there
+  must follow the domain.
+

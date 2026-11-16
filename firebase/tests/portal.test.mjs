@@ -98,6 +98,48 @@ test("can't attend closes 2 hours before; status and monthly summary", () => {
   assert.deepEqual(Object.values(core.monthRangeIST('2026-12')).map((ms) => new Date(ms).toISOString()), ['2026-11-30T18:30:00.000Z', '2026-12-31T18:30:00.000Z']);
 });
 
+test('WhatsApp messages: number handling, wording, and no meeting link', () => {
+  assert.equal(core.waNumber('98765 43210'), '919876543210', 'ten digits are an Indian mobile');
+  assert.equal(core.waNumber('098765-43210'), '919876543210');
+  assert.equal(core.waNumber('+91 98765 43210'), '919876543210');
+  assert.equal(core.waNumber('+971 50 123 4567'), '971501234567');
+  assert.equal(core.waNumber('0044 7700 900123'), '447700900123');
+  for (const bad of ['', null, '12345', 'not a number', '1234567890123456']) assert.equal(core.waNumber(bad), null);
+  assert.equal(core.waLink('', 'x'), null);
+  assert.equal(core.waLink('9876543210', 'a b&c\nd'), 'https://wa.me/919876543210?text=a%20b%26c%0Ad');
+  assert.deepEqual(['00:05', '12:00', '17:00', '23:59'].map(core.time12), ['12:05 am', '12:00 pm', '5:00 pm', '11:59 pm']);
+  assert.equal(core.daysText([4, 1]), 'Mon and Thu');
+  assert.equal(core.daysText(['5', '1', '3']), 'Mon, Wed and Fri');
+  assert.equal(core.daysText([6]), 'Sat');
+
+  const student = { nickname: 'Aarav', accessCode: 'AARAV-7K3Q' };
+  const series = { name: 'Beginners A', weekdays: [1, 4], startTime: '17:00', durationMin: 50, startDate: '2026-11-16', weeks: 12, link: 'https://meet.example/secret-room' };
+  // Tuesday 17 Nov 2026, noon India time → next class is Thursday 19 Nov
+  const now = core.istToUtcMs('2026-11-17', '12:00');
+  assert.equal(core.dayLabel(core.nextClassMs(series, now)), 'Thursday 19 Nov');
+  assert.equal(core.dayLabel(core.nextClassMs(series, core.istToUtcMs('2026-11-19', '16:59'))), 'Thursday 19 Nov', 'a class later today counts');
+  assert.equal(core.dayLabel(core.nextClassMs(series, core.istToUtcMs('2026-11-19', '17:00'))), 'Monday 23 Nov', 'a class that has started does not');
+  assert.equal(core.dayLabel(core.nextClassMs({ ...series, startDate: '2026-12-10' }, now)), 'Thursday 10 Dec', 'a batch that has not begun');
+  const welcome = core.welcomeMessage(student, series, now);
+  assert.equal(welcome, [
+    'Hello! Aarav\u2019s chess classes with Shubham Chess Academy are set.',
+    'Batch: Beginners A',
+    'Days: Mon and Thu, 5:00 pm India time (50 minutes)',
+    'Next class: Thursday 19 Nov',
+    '',
+    'Student login: https://shubhamchessacademy.com/app/',
+    'Access code: AARAV-7K3Q',
+    'Open the login page 10 minutes before the class and press Join.',
+  ].join('\n'));
+  const session = { seriesName: 'Beginners A', startsAtMs: core.istToUtcMs('2026-11-19', '17:00'), link: series.link };
+  const reminder = core.reminderMessage(student, session);
+  assert.match(reminder, /^Reminder: Aarav\u2019s chess class \(Beginners A\) is on Thursday 19 Nov at 5:00 pm India time\./);
+  for (const msg of [welcome, reminder]) {
+    assert.ok(!msg.includes('meet.example'), 'the meeting link must not be in a WhatsApp message');
+    assert.ok(msg.includes('https://shubhamchessacademy.com/app/') && msg.includes('AARAV-7K3Q'));
+  }
+});
+
 // ---------- 2. security rules ----------
 
 test('rules: who can read and write what', async () => {

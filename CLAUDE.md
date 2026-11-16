@@ -481,4 +481,11 @@ When Akash gives feedback on the site, the copy, the design, or how this project
   planned 3-hour warning), coach Attendance tab with monthly table, corrections, WhatsApp
   summary and CSV, attendance line for parents. Rule: a portal limit Akash states is enforced
   in `firestore.rules` as well as hidden in the UI, never UI-only.
+- 2026-11-17 — Akash: from a batch, a button should open WhatsApp with the class details, login
+  link and access code written, for him to press send; "do not put meeting link in message".
+  → "Open WhatsApp" + "Copy message" per student on each batch (class details) and each coming
+  class (reminder); parent number editable on the student card. Rule: WhatsApp messages from the
+  portal never contain the meeting link, only the login link and code. Same day, on his ask, an
+  agent added three edge-case test files (196 tests with the original); the three behaviours it
+  flagged (impossible dates accepted, half-filled class move ignored) were fixed in `core.js`.
 

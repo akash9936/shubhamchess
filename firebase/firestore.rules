@@ -1,5 +1,5 @@
 rules_version = '2';
-// Student portal — who may read and write what. Tested in tests/rules.test.mjs;
+// Student portal — who may read and write what. Tested in tests/portal.test.mjs and tests/rules.edge.test.mjs;
 // run `npm test` in this folder before publishing a change.
 service cloud.firestore {
   match /databases/{database}/documents {

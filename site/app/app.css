@@ -96,3 +96,7 @@ details.p-more[open] > summary { margin-bottom: 14px; }
 .p-table td:not(:first-child), .p-table th:not(:first-child) { text-align: right; font-variant-numeric: tabular-nums; }
 details.p-att { padding-block: 10px; border-top: 1px solid var(--line); }
 details.p-att:first-of-type { margin-top: 12px; }
+
+/* WhatsApp send lines */
+.p-send { gap: 6px 14px; }
+.p-send-name { font-weight: 700; min-width: 5.5em; }

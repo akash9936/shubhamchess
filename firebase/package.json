@@ -4,7 +4,7 @@
   "type": "module",
   "description": "Emulator tests for the student portal. Not deployed; site/ is the deploy root.",
   "scripts": {
-    "test": "firebase emulators:exec --project demo-shubhamchess \"node --test tests/portal.test.mjs\"",
+    "test": "firebase emulators:exec --project demo-shubhamchess \"node --test --test-concurrency=1 'tests/*.test.mjs'\"",
     "emulators": "firebase emulators:start --project demo-shubhamchess"
   },
   "devDependencies": {

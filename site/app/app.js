@@ -4,7 +4,7 @@ import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.14.1/fireba
 import * as fbAuth from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
 import * as fbStore from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
 import { firebaseConfig } from './firebase-config.js';
-import { makeApi, joinState, isHttpsUrl, istParts, JOIN_OPENS_MIN, CANCEL_CUTOFF_MIN, canCancel, studentStatus, attendanceSummary, percent, monthRangeIST } from './core.js';
+import { makeApi, joinState, isHttpsUrl, istParts, JOIN_OPENS_MIN, CANCEL_CUTOFF_MIN, canCancel, studentStatus, attendanceSummary, percent, monthRangeIST, waLink, welcomeMessage, reminderMessage } from './core.js';
 
 const root = document.getElementById('app');
 const signoutBtn = document.getElementById('signout');
@@ -269,6 +269,21 @@ async function coachView() {
     att.sessions = await api.listSessionsBetween(r.fromMs, r.toMs);
     draw();
   };
+  // One line per student: a WhatsApp link with the message written, plus Copy. The coach
+  // presses send in WhatsApp himself. No mobile saved → Copy only.
+  const sendLines = (ids, makeText, kind) => ids.map((id) => {
+    const st = students.find((x) => x.id === id);
+    if (!st) return null;
+    const text = makeText(st), link = waLink(st.mobile, text);
+    const copied = h('span', { class: 'p-ok' });
+    return h('div', { class: 'p-actions p-send', 'data-send': kind, 'data-student': st.nickname },
+      h('span', { class: 'p-send-name' }, st.nickname),
+      link ? h('a', { class: 'p-link', href: link, target: '_blank', rel: 'noopener' }, 'Open WhatsApp')
+        : h('span', { class: 'p-sub' }, st.mobile ? 'Number looks wrong' : 'No WhatsApp number saved'),
+      h('button', { type: 'button', class: 'p-link', onclick: async () => { try { await navigator.clipboard.writeText(text); copied.textContent = 'Copied'; } catch (e) { copied.textContent = 'Could not copy'; } } }, 'Copy message'),
+      copied);
+  });
+
   // Coach's own mark on one student in one class: automatic → present → absent → automatic.
   const flip = async (s, id) => {
     const cur = s.attendance[id];
@@ -322,6 +337,8 @@ async function coachView() {
       })),
       s.studentIds.filter((id) => s.absences[id] && !s.joins[id]).map((id) =>
         h('span', { class: 'p-sub p-away-note' }, nameOf(id) + ' can\u2019t attend' + (s.absences[id].reason ? ': ' + s.absences[id].reason : ''))),
+      cancelled || s.endsAtMs <= Date.now() ? null : h('details', { class: 'p-more', 'data-remind': '' }, h('summary', {}, 'Remind on WhatsApp'),
+        h('div', { class: 'p-stack' }, sendLines(s.studentIds, (st) => reminderMessage(st, s), 'remind'))),
       h('details', { class: 'p-more' }, h('summary', {}, 'Change this class'),
         h('div', { class: 'p-grid' },
           field('Date', date), field('Start time', time), field('Meeting link (this class only)', link, 'wide'),
@@ -413,7 +430,7 @@ async function coachView() {
         h('p', { class: 'p-sub', style: 'margin-bottom:14px' }, 'The access code is made for you. Send it to the parent on WhatsApp.'),
         h('div', { class: 'p-grid', id: 'add-student' },
           field('Full name', full), field('Nickname (shown to the child, starts the code)', nick),
-          field('Parent mobile (optional)', mobile), field('Parent email (optional)', email),
+          field('Parent WhatsApp number (optional)', mobile), field('Parent email (optional)', email),
           h('div', { class: 'wide' }, add), err)),
       h('div', { class: 'p-card' }, h('h2', {}, 'Students'),
         students.length ? h('ul', { class: 'p-rows' }, students.map(studentCard)) : h('p', { class: 'p-sub' }, 'No students yet.')),
@@ -435,6 +452,16 @@ async function coachView() {
           await done(s.active ? s.nickname + ' can no longer see classes.' : s.nickname + ' can sign in again.');
         }, err),
         copied),
+      h('details', { class: 'p-more' }, h('summary', {}, 'Change WhatsApp number or email'), (() => {
+        const m = h('input', { type: 'tel', value: s.mobile || '', autocomplete: 'off' });
+        const e = h('input', { type: 'email', value: s.email || '', autocomplete: 'off' });
+        return h('div', { class: 'p-grid' }, field('Parent WhatsApp number', m), field('Parent email', e),
+          h('p', { class: 'p-sub wide' }, 'Ten digits are read as an Indian number. For other countries start with the country code, for example +971…'),
+          h('div', { class: 'wide' }, action('Save', 'btn primary small', async () => {
+            await api.updateStudentContact(s.id, { mobile: m.value, email: e.value });
+            await done('Contact saved for ' + s.nickname + '.');
+          }, err)));
+      })()),
       err);
   };
 
@@ -458,7 +485,7 @@ async function coachView() {
     const add = action('Create batch', 'btn primary', async () => {
       const r = await api.addSeries({ name: name.value, studentIds: checked(who, 'student'), weekdays: checked(days, 'day'),
         startTime: time.value, durationMin: Number(mins.value), startDate: date.value, weeks: Number(weeks.value), link: link.value });
-      await done('Batch created with ' + r.sessions + ' classes.');
+      await done('Batch created with ' + r.sessions + ' classes. Send the class details to each parent from the batch below.');
     }, err);
     return [
       h('div', { class: 'p-card' }, h('h2', {}, 'Add a batch'),
@@ -485,7 +512,8 @@ async function coachView() {
     return h('li', { class: 'p-row' },
       h('div', { class: 'p-row-top' }, h('b', {}, b.name),
         h('span', { class: 'p-time' }, b.weekdays.map((d) => WEEKDAYS[d]).join(' · ') + ' · ' + b.startTime + ' · ' + b.durationMin + ' min')),
-      h('div', { class: 'p-names' }, b.studentIds.map((id) => h('span', {}, nameOf(id)))),
+      h('div', { class: 'p-field' }, h('span', { class: 'p-legend' }, 'Send class details and login on WhatsApp'),
+        sendLines(b.studentIds, (st) => welcomeMessage(st, b, Date.now()), 'welcome')),
       h('span', { class: 'p-url' }, b.link),
       h('details', { class: 'p-more' }, h('summary', {}, 'Change this batch'),
         h('div', { class: 'p-stack' },
