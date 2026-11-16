@@ -643,3 +643,11 @@ footer.site .wrap { line-height: 1.9; }
 @media (max-width: 760px) { footer.site { padding-bottom: 96px; } }
 /* Contact block email (11-11): long address may break on narrow phones rather than overflow. */
 .contact dd a[href^="mailto:"] { overflow-wrap: anywhere; }
+
+/* ---------- header fits nine links (Login added 2026-11-17) ----------
+   Tighter nav. On the two home pages (the ones with a jump bar) the header nav gives way
+   to the jump bar from 1100px down; it used to switch at 760px and overflowed up to 900.
+   Guide pages have five links and no jump bar, so they keep the 760px switch. */
+nav.links { gap: 16px; font-size: 0.92rem; }
+@media (min-width: 1101px) { header.site .brand { white-space: nowrap; } }
+@media (max-width: 1100px) { body:has(.jump) nav.links { display: none; } .jump { display: block; } }

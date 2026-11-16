@@ -33,7 +33,7 @@ shubham-chess-site/
 
 - **No build step.** Edit the HTML/CSS directly; open with `open site/index.html`. Shared
   styles live in `site/styles.css` — never re-inline them. **Every page links it as
-  `styles.css?v=<yyyymmdd><letter>`; bump the version in all five pages whenever the CSS
+  `styles.css?v=<yyyymmdd><letter>`; bump the version in all six pages (the five public ones and `app/index.html`) whenever the CSS
   changes** (GitHub Pages caches it for 10 min and phones keep it longer: a stale sheet
   with new HTML looks like a broken deploy — 2026-11-11).
 - **Open the site when done (Akash, 2026-11-11).** After any change to `site/`, finish the turn by
@@ -44,7 +44,7 @@ shubham-chess-site/
   through a 390-px iframe wrapper — see NOTES.md "Verifying"). Check: tag balance, 64 `.sq`
   buttons in the dumped DOM (= JS ran), no element wider than the viewport, local links and
   `#anchors` resolve, `grep -c 'class="ph"'`.
-- **Domain is `https://shubhamchessacademy.com`** (bought 2026-11-17, GoDaddy, 3 years; every canonical / OG / JSON-LD / sitemap URL and both `CNAME` files use it — apex, no `www`). Until Akash sets DNS + the Pages custom domain and pushes, the live copy is still at `https://shubham.akashs.com`; after the switch that subdomain only forwards. (GitHub Pages via Actions, repo
+- **Domain is `https://shubhamchessacademy.com`** (bought 2026-11-17, GoDaddy, 3 years; every canonical / OG / JSON-LD / sitemap URL and both `CNAME` files use it — apex, no `www`). Live there since 2026-11-17; `shubham.akashs.com` is the retired address (to be a 301 forward). (GitHub Pages via Actions, repo
   github.com/akash9936/shubhamchess, branch `master`). Every push to `site/` deploys in
   ~30 s. Akash pushes; Claude cannot (`git add/commit/push` denied).
 - `draft/` is history. Do not edit it; the review artifact
@@ -174,6 +174,8 @@ The rules the page is written to. Feedback from Akash changes this list, never j
   extra sheet, portal-only). No analytics on it, `noindex`, everything from the database
   written as text, meeting links must be `https://`. Words: "batch", "class", "access code",
   "Coach desk"; coach times are India time, student times are local with India underneath.
+  "Login" sits last in the header nav on every page (and in the phone jump bar), as a plain
+  link, never a button; `/app/` opens on a Student / Coach chooser, then the matching form.
 - **No dependencies** except Google Fonts, and the Firebase SDK on `/app/` only. Must render fine if
   either fails. Pages share `styles.css`; no framework, no bundler.
 - **Static only** (see Hosting above). Any feature must work from `index.html` served as a
@@ -459,3 +461,17 @@ When Akash gives feedback on the site, the copy, the design, or how this project
   `firebase/`): coach signs in with a fixed ID + password held in Firebase Auth, not in the page
   (public repo); batch form takes one link for all its classes. Google sign-in for the coach
   dropped. Rules added: no credentials in tracked files; run the emulator tests on any rules change.
+- 2026-11-17 — Akash created the Firebase project (shubham-chess-academy) and made the coach
+  account with a full email, not `<id>@coach.local`. → Coach form accepts a full email as typed
+  (label "Coach ID or email"), wrong-login message reworded for the coach, web config committed
+  without `measurementId`, "Student login" link added to the footer of all five pages (HI:
+  स्टूडेंट लॉगिन). Rule: the portal link lives in the footer only, never in the header or as a button.
+- 2026-11-17 — Akash: put "Login" in the header menu; it should open the login page, where the
+  visitor picks Student or Coach and then signs in. → "Login" is the last item of the header nav
+  on all five pages (HI: लॉगिन) and a pill in the phone jump bar on the two home pages; `/app/`
+  now opens on a two-button chooser (Student · Coach) and shows the matching form after the
+  pick. Replaces the same-day "footer only" rule: Login is a plain nav link in the header, still
+  never a button; the footer link stays. The ninth link made the header wrap, so the nav is tighter
+  and the two home pages switch to the jump bar from 1100 px down (was 760, where the row already
+  overflowed up to 900); guide pages keep 760. CSS v=20261117c. Also fixed: "Sign out" was showing
+  on the portal while signed out.
