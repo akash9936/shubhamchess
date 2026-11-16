@@ -488,4 +488,14 @@ When Akash gives feedback on the site, the copy, the design, or how this project
   portal never contain the meeting link, only the login link and code. Same day, on his ask, an
   agent added three edge-case test files (196 tests with the original); the three behaviours it
   flagged (impossible dates accepted, half-filled class move ignored) were fixed in `core.js`.
+- 2026-11-17 — Akash: can homework be built without running a server (coach writes text plus
+  a Lichess study or PDF link for a class or batch; the student sees it and ticks done)? Then
+  "Implement this". → Homework tab on the coach desk and a Homework card for the student, on
+  the class document, with the tick enforced in `firestore.rules`; 197 tests pass and both
+  screens were driven in headless Chrome at 390 px. Rule: a PDF or any file is a pasted
+  https link, never an upload (Storage is off the free plan); only https links are saved or drawn.
+- 2026-11-17 — Akash: a class six days away showed "It is less than 2 hours to this class". →
+  The page was calling every database refusal a late cancellation. It now says that only when
+  the clock agrees; otherwise "This could not be saved just now" plus WhatsApp. Rule: a portal
+  error names a cause only when the code has checked it.
 

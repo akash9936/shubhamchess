@@ -4,7 +4,7 @@ import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.14.1/fireba
 import * as fbAuth from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
 import * as fbStore from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
 import { firebaseConfig } from './firebase-config.js';
-import { makeApi, joinState, isHttpsUrl, istParts, JOIN_OPENS_MIN, CANCEL_CUTOFF_MIN, canCancel, studentStatus, attendanceSummary, percent, monthRangeIST, waLink, welcomeMessage, reminderMessage } from './core.js';
+import { makeApi, joinState, isHttpsUrl, istParts, JOIN_OPENS_MIN, CANCEL_CUTOFF_MIN, canCancel, studentStatus, attendanceSummary, percent, monthRangeIST, waLink, welcomeMessage, reminderMessage, parseHomeworkLinks, linkLabel, hasHomework, homeworkFor, HOMEWORK_MAX_TEXT, HOMEWORK_MAX_LINKS } from './core.js';
 
 const root = document.getElementById('app');
 const signoutBtn = document.getElementById('signout');
@@ -38,6 +38,7 @@ const whenLocal = (ms) => fmt(WHEN).format(ms);
 const whenIST = (ms) => fmt(WHEN, 'Asia/Kolkata').format(ms);
 const timeIST = (ms) => fmt({ hour: 'numeric', minute: '2-digit', hour12: true }, 'Asia/Kolkata').format(ms);
 const dayIST = (ms) => fmt({ weekday: 'long', day: 'numeric', month: 'short' }, 'Asia/Kolkata').format(ms);
+const dayLocal = (ms) => fmt({ weekday: 'long', day: 'numeric', month: 'short' }).format(ms);
 const inIndia = () => whenLocal(0) === whenIST(0) && whenLocal(15552000000) === whenIST(15552000000);
 
 function untilText(ms, now) {
@@ -70,6 +71,13 @@ function action(label, cls, run, out) {
     b.disabled = false;
   });
   return b;
+}
+
+// Homework links as buttons. Only https links are drawn, whatever is stored.
+function hwLinks(s) {
+  const links = s.homework.links.filter(isHttpsUrl);
+  return links.length ? h('div', { class: 'p-actions' }, links.map((u) =>
+    h('a', { class: 'btn ghost small', href: u, target: '_blank', rel: 'noopener' }, linkLabel(u)))) : null;
 }
 
 // ---------- start ----------
@@ -164,7 +172,7 @@ function submit(run, btn, err, wrongMsg) {
 
 // ---------- student ----------
 async function studentView(user, student) {
-  let sessions = [], editing = null, draft = '', problem = '';
+  let sessions = [], editing = null, draft = '', problem = '', hwProblem = '';
   const abroad = !inIndia();
   const uid = user.uid;
 
@@ -182,11 +190,43 @@ async function studentView(user, student) {
       next ? nextCard(next, now) : h('div', { class: 'p-card p-next' },
         h('h2', {}, 'No class is scheduled yet'),
         h('p', { class: 'p-sub' }, 'Your coach will add your classes here. Ask on WhatsApp if you expected one.')),
+      homeworkCard(now),
       upcoming.length ? h('div', { class: 'p-card' }, h('h2', {}, 'Coming up'), h('ul', { class: 'p-rows' }, upcoming.map((s) => studentRow(s, now)))) : null,
       past.length ? h('div', { class: 'p-card' }, h('details', { class: 'p-more' }, h('summary', {}, 'Past classes'),
         h('ul', { class: 'p-rows' }, past.map((s) => studentRow(s, now))))) : null);
     const box = document.getElementById('reason');
     if (box) box.focus();
+  };
+
+  // Homework from recent classes, still-to-do first. The tick is the student's own.
+  const homeworkCard = (now) => {
+    const list = homeworkFor(sessions, uid, now).slice(0, 8);
+    if (!list.length) return null;
+    const todo = list.filter((s) => !s.homeworkDone[uid]).length;
+    return h('div', { class: 'p-card', id: 'homework' },
+      h('h2', {}, 'Homework'),
+      h('p', { class: 'p-sub', id: 'hw-line' }, todo ? todo + ' to do' : 'All done'),
+      hwProblem ? h('p', { class: 'p-error' }, hwProblem) : null,
+      h('ul', { class: 'p-rows' }, list.map((s) => {
+        const ticked = !!s.homeworkDone[uid];
+        const tick = h('input', { type: 'checkbox', checked: ticked, 'data-hw': s.id, onchange: async (e) => {
+          const want = e.target.checked;
+          e.target.disabled = true; hwProblem = '';
+          try {
+            await api.setHomeworkDone(s, uid, want);
+            if (want) s.homeworkDone[uid] = true; else delete s.homeworkDone[uid];
+          } catch (err) { console.error(err); hwProblem = friendly(err); }
+          draw();
+        } });
+        return h('li', { class: 'p-row p-hw' + (ticked ? ' done' : '') },
+          h('div', { class: 'p-row-top' },
+            h('b', {}, (s.startsAtMs > now ? 'For the class on ' : 'From the class on ') + dayLocal(s.startsAtMs)),
+            ticked ? h('span', { class: 'p-pill' }, 'Done') : null),
+          h('span', { class: 'p-sub' }, s.seriesName),
+          s.homework.text ? h('p', { class: 'p-hw-text' }, s.homework.text) : null,
+          hwLinks(s),
+          h('label', { class: 'p-tick' }, tick, ticked ? 'Done. Untick if you still need to finish it.' : 'I have done this'));
+      })));
   };
 
   // "Can't attend": offered until 2 hours before the start, and can be taken back until then.
@@ -195,7 +235,12 @@ async function studentView(user, student) {
     const run = (fn) => async () => {
       problem = '';
       try { await fn(); editing = null; draft = ''; } catch (e) {
-        problem = /permission-denied/.test(e.code || '') ? 'It is less than ' + CUTOFF_HOURS + ' hours to this class, so this is closed. Message us on WhatsApp.' : friendly(e);
+        // A refusal means "too late" only if the clock agrees. Otherwise it is our problem
+        // (for example the database rules are older than this page), so do not blame the time.
+        const tooLate = !canCancel(s, Date.now());
+        if (!/permission-denied/.test(e.code || '')) problem = friendly(e);
+        else if (tooLate) problem = 'It is less than ' + CUTOFF_HOURS + ' hours to this class, so this is closed. Message us on WhatsApp.';
+        else { problem = 'This could not be saved just now. Please tell us on WhatsApp instead.'; console.error('Absence refused although the class is more than ' + CUTOFF_HOURS + ' hours away: are the published Firestore rules up to date?', e); }
       }
       draw();
     };
@@ -257,6 +302,28 @@ async function coachView() {
   let tab = 'classes', students = [], series = [], sessions = [], notice = '';
   const att = { month: istParts(Date.now()).date.slice(0, 7), batch: '', sessions: null };
   const nameOf = (id) => { const s = students.find((x) => x.id === id); return s ? s.nickname : 'removed'; };
+  // Homework desk: classes from the last 3 weeks to the coming week; the form's values live
+  // here because every draw rebuilds the page.
+  const hw = { sessions: null, batch: '', sessionId: '', text: '', links: '' };
+  const hwClasses = (batchId) => (hw.sessions || []).filter((s) => s.seriesId === batchId && s.status !== 'cancelled');
+  const hwPick = (id) => {
+    const s = (hw.sessions || []).find((x) => x.id === id);
+    hw.sessionId = s ? s.id : '';
+    hw.text = s && s.homework ? s.homework.text : '';
+    hw.links = s && s.homework ? s.homework.links.join('\n') : '';
+  };
+  // The class homework usually belongs to: the latest one that has started, else the first coming one.
+  const hwDefault = (batchId) => {
+    const list = hwClasses(batchId), started = list.filter((s) => s.startsAtMs <= Date.now());
+    return (started.length ? started[started.length - 1] : list[0] || { id: '' }).id;
+  };
+  const loadHw = async () => {
+    const now = Date.now();
+    hw.sessions = await api.listSessionsBetween(now - 21 * DAY, now + 8 * DAY);
+    if (!series.some((b) => b.id === hw.batch)) hw.batch = series.length ? series[0].id : '';
+    hwPick(hwClasses(hw.batch).some((s) => s.id === hw.sessionId) ? hw.sessionId : hwDefault(hw.batch));
+    draw();
+  };
 
   const reload = async () => {
     const from = Date.now() - 3 * 3600000;
@@ -294,13 +361,13 @@ async function coachView() {
   };
 
   const draw = () => {
-    const tabs = [['classes', 'Classes'], ['students', 'Students (' + students.filter((s) => s.active).length + ')'], ['batches', 'Batches (' + series.length + ')'], ['attendance', 'Attendance']];
+    const tabs = [['classes', 'Classes'], ['students', 'Students (' + students.filter((s) => s.active).length + ')'], ['batches', 'Batches (' + series.length + ')'], ['attendance', 'Attendance'], ['homework', 'Homework']];
     show(
       h('div', { class: 'p-head' }, h('div', {}, h('h1', {}, 'Coach desk'), h('p', {}, 'All times are India time.'))),
       h('div', { class: 'p-tabs', role: 'tablist' }, tabs.map(([id, label]) =>
-        h('button', { type: 'button', role: 'tab', 'aria-selected': String(tab === id), 'data-tab': id, onclick: () => { tab = id; notice = ''; draw(); if (id === 'attendance') loadAtt().catch(console.error); } }, label))),
+        h('button', { type: 'button', role: 'tab', 'aria-selected': String(tab === id), 'data-tab': id, onclick: () => { tab = id; notice = ''; draw(); if (id === 'attendance') loadAtt().catch(console.error); if (id === 'homework') loadHw().catch(console.error); } }, label))),
       notice ? h('p', { class: 'p-ok', id: 'notice', style: 'margin-bottom:14px' }, notice) : null,
-      tab === 'classes' ? classesTab() : tab === 'students' ? studentsTab() : tab === 'batches' ? batchesTab() : attendanceTab());
+      tab === 'classes' ? classesTab() : tab === 'students' ? studentsTab() : tab === 'batches' ? batchesTab() : tab === 'homework' ? homeworkTab() : attendanceTab());
   };
 
   // ----- classes: today and the next 7 days -----
@@ -410,6 +477,66 @@ async function coachView() {
           h('div', { class: 'p-actions', style: 'margin-top:10px' },
             action('Copy summary for WhatsApp', 'p-link', async () => { await navigator.clipboard.writeText(summaryText(id)); copied.textContent = 'Copied'; }, err), copied),
           h('p', { class: 'p-sub p-summary', style: 'margin-top:6px' }, summaryText(id))); })),
+    ];
+  };
+
+  // ----- homework: written on one class, seen by every student of that class -----
+  const homeworkTab = () => {
+    if (!series.length) return h('div', { class: 'p-card' }, h('h2', {}, 'Homework'), h('p', { class: 'p-sub' }, 'Add a batch first. Homework is set on a class of a batch.'));
+    if (!hw.sessions) return h('div', { class: 'p-card' }, h('h2', {}, 'Homework'), h('p', { class: 'p-loading' }, 'Loading…'));
+    const now = Date.now();
+    const dayShort = (ms) => fmt({ weekday: 'short', day: 'numeric', month: 'short' }, 'Asia/Kolkata').format(ms);
+    const classes = hwClasses(hw.batch);
+    const current = classes.find((s) => s.id === hw.sessionId);
+    const err = h('p', { class: 'p-error wide' });
+
+    const batchIn = h('select', { id: 'hw-batch', onchange: (e) => { hw.batch = e.target.value; hwPick(hwDefault(hw.batch)); notice = ''; draw(); } },
+      series.map((b) => h('option', { value: b.id, selected: hw.batch === b.id }, b.name)));
+    const classIn = h('select', { id: 'hw-class', onchange: (e) => { hwPick(e.target.value); notice = ''; draw(); } },
+      classes.map((s) => h('option', { value: s.id, selected: s.id === hw.sessionId },
+        dayShort(s.startsAtMs) + ' \u00b7 ' + timeIST(s.startsAtMs) + (s.startsAtMs > now ? ' (coming)' : '') + (hasHomework(s) ? ' \u00b7 homework set' : ''))));
+    const text = h('textarea', { id: 'hw-text', rows: '4', maxlength: String(HOMEWORK_MAX_TEXT), value: hw.text,
+      placeholder: 'Solve chapters 1 and 2 of the study. Play two 10-minute games.', oninput: (e) => { hw.text = e.target.value; } });
+    const links = h('textarea', { id: 'hw-links', rows: '3', value: hw.links, spellcheck: 'false',
+      placeholder: 'https://lichess.org/study/\u2026', oninput: (e) => { hw.links = e.target.value; } });
+    const save = action(current && hasHomework(current) ? 'Save changes' : 'Give homework', 'btn primary', async () => {
+      await api.setHomework(current, { text: hw.text, links: parseHomeworkLinks(hw.links) });
+      notice = 'Homework saved for ' + current.seriesName + ', ' + dayShort(current.startsAtMs) + '. Students see it when they sign in.';
+      await loadHw();
+    }, err);
+    const remove = current && hasHomework(current) ? action('Remove this homework', 'p-link p-danger', async () => {
+      await api.clearHomework(current);
+      notice = 'Homework removed from ' + current.seriesName + ', ' + dayShort(current.startsAtMs) + '.';
+      await loadHw();
+    }, err) : null;
+
+    const given = hw.sessions.filter(hasHomework).sort((a, b) => b.startsAtMs - a.startsAtMs);
+    return [
+      h('div', { class: 'p-card' }, h('h2', {}, 'Give homework'),
+        h('p', { class: 'p-sub', style: 'margin-bottom:14px' }, 'Pick the batch and the class it belongs to. Every student of that class sees it and ticks it when done.'),
+        h('div', { class: 'p-grid', id: 'hw-form' },
+          field('Batch', batchIn),
+          classes.length ? field('Class', classIn) : h('p', { class: 'p-sub' }, 'This batch has no class in the last 3 weeks or the next 7 days.'),
+          current ? [
+            field('Homework', text, 'wide'),
+            field('Links, one per line (up to ' + HOMEWORK_MAX_LINKS + ')', links, 'wide'),
+            h('p', { class: 'p-sub wide' }, 'Paste a Lichess study link, or any https link. For a PDF, put the file on Google Drive, set it to "Anyone with the link", and paste that link.'),
+            h('div', { class: 'p-actions wide' }, save, remove),
+          ] : null,
+          err)),
+      h('div', { class: 'p-card' }, h('h2', {}, 'Homework given'),
+        h('p', { class: 'p-sub' }, 'The last 3 weeks and the coming week. A green name has ticked it done.'),
+        given.length ? h('ul', { class: 'p-rows' }, given.map((s) => {
+          const doneCount = s.studentIds.filter((id) => s.homeworkDone[id]).length;
+          const canEdit = s.status !== 'cancelled' && series.some((b) => b.id === s.seriesId);
+          return h('li', { class: 'p-row' + (s.status === 'cancelled' ? ' cancelled' : ''), 'data-hw-row': s.id },
+            h('div', { class: 'p-row-top' }, h('b', {}, dayShort(s.startsAtMs) + ' \u00b7 ' + s.seriesName),
+              s.status === 'cancelled' ? h('span', { class: 'p-pill off' }, 'Class cancelled') : h('span', { class: 'p-time' }, doneCount + ' of ' + s.studentIds.length + ' done')),
+            s.homework.text ? h('p', { class: 'p-hw-text' }, s.homework.text) : null,
+            hwLinks(s),
+            h('div', { class: 'p-names' }, s.studentIds.map((id) => h('span', { class: s.homeworkDone[id] ? 'in' : '', 'data-student': nameOf(id) }, nameOf(id)))),
+            canEdit ? h('div', { class: 'p-actions' }, h('button', { type: 'button', class: 'p-link', onclick: () => { hw.batch = s.seriesId; hwPick(s.id); notice = ''; draw(); window.scrollTo({ top: 0 }); } }, 'Change')) : null);
+        })) : h('p', { class: 'p-sub', style: 'margin-top:10px' }, 'No homework given yet.')),
     ];
   };
 

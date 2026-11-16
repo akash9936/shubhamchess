@@ -42,8 +42,8 @@ service cloud.firestore {
       allow update: if isCoach()
         || (isActiveStudent()
             && request.auth.uid in resource.data.studentIds
-            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['joins', 'absences'])
-            && joinsOk() && absencesOk());
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['joins', 'absences', 'homeworkDone'])
+            && joinsOk() && absencesOk() && homeworkDoneOk());
 
       function changed(field) {
         return request.resource.data.get(field, {}).diff(resource.data.get(field, {})).affectedKeys();
@@ -60,6 +60,15 @@ service cloud.firestore {
               && request.time < resource.data.startsAt - duration.value(2, 'h')
               && (!(request.auth.uid in request.resource.data.get('absences', {}))
                   || noteOk(request.resource.data.absences[request.auth.uid])));
+      }
+      // Homework: own tick only, only on a class that carries homework (which only the coach
+      // can write); the tick is the time it was made.
+      function homeworkDoneOk() {
+        return changed('homeworkDone').size() == 0
+          || (changed('homeworkDone').hasOnly([request.auth.uid])
+              && resource.data.get('homework', null) != null
+              && (!(request.auth.uid in request.resource.data.get('homeworkDone', {}))
+                  || request.resource.data.homeworkDone[request.auth.uid] == request.time));
       }
       function noteOk(note) {
         return note.keys().hasOnly(['at', 'reason'])

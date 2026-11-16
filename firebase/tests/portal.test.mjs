@@ -12,12 +12,15 @@ import * as core from '../../site/app/core.js';
 
 const PROJECT = 'demo-shubhamchess';
 const HOUR = 3600000;
+// Default ports are the ones in firebase.json; override both to test beside running emulators.
+const FS_PORT = Number(process.env.PORTAL_FS_PORT) || 8080;
+const AUTH_URL = 'http://127.0.0.1:' + (Number(process.env.PORTAL_AUTH_PORT) || 9099);
 let env;
 
 before(async () => {
   env = await initializeTestEnvironment({
     projectId: PROJECT,
-    firestore: { rules: readFileSync(new URL('../firestore.rules', import.meta.url), 'utf8'), host: '127.0.0.1', port: 8080 },
+    firestore: { rules: readFileSync(new URL('../firestore.rules', import.meta.url), 'utf8'), host: '127.0.0.1', port: FS_PORT },
   });
   await env.clearFirestore();
 });
@@ -140,6 +143,35 @@ test('WhatsApp messages: number handling, wording, and no meeting link', () => {
   }
 });
 
+test('homework: links, limits, labels, and the student list order', () => {
+  assert.deepEqual(core.parseHomeworkLinks(' https://lichess.org/study/abc\n\n https://x.example/a.pdf  https://y.example '),
+    ['https://lichess.org/study/abc', 'https://x.example/a.pdf', 'https://y.example']);
+  assert.deepEqual(core.parseHomeworkLinks(''), []);
+  assert.equal(core.validateHomework({ text: 'Solve 10 puzzles', links: [] }), null);
+  assert.equal(core.validateHomework({ text: '', links: ['https://lichess.org/study/abc'] }), null);
+  assert.match(core.validateHomework({ text: '  ', links: [] }), /Write the homework/);
+  assert.match(core.validateHomework({ text: 'x'.repeat(1001), links: [] }), /under 1000/);
+  assert.match(core.validateHomework({ text: 'x', links: Array(6).fill('https://a.example') }), /at most 5/);
+  for (const bad of ['javascript:alert(1)', 'http://lichess.org/study/a', 'lichess.org/study/a'])
+    assert.match(core.validateHomework({ text: 'x', links: [bad] }), /https/);
+  assert.deepEqual([
+    'https://lichess.org/study/abc123', 'https://lichess.org/training/mateIn1', 'https://lichess.org/@/someone',
+    'https://drive.google.com/file/d/1/view', 'https://files.example/sheet.PDF?x=1', 'https://www.youtube.com/watch?v=1',
+    'https://www.chess.com/lessons', 'https://www.example.org/page', 'not a url',
+  ].map(core.linkLabel), ['Lichess study', 'Lichess puzzle', 'Lichess', 'Google Drive file', 'PDF', 'Video', 'Chess.com', 'example.org', 'Open link']);
+
+  const DAY = 24 * HOUR, now = 100 * DAY;
+  const cls = (id, daysAgo, extra) => ({ id, startsAtMs: now - daysAgo * DAY, status: 'scheduled', homework: { text: 'hw ' + id, links: [] }, homeworkDone: {}, ...extra });
+  const list = core.homeworkFor([
+    cls('old', 31), cls('doneRecent', 1, { homeworkDone: { me: 1 } }), cls('todoOlder', 9), cls('todoNewer', 2),
+    cls('none', 3, { homework: null }), cls('empty', 3, { homework: { text: '', links: [] } }),
+    cls('cancelled', 4, { status: 'cancelled' }), cls('otherDid', 5, { homeworkDone: { someoneElse: 1 } }), cls('coming', -2),
+  ], 'me', now).map((s) => s.id);
+  assert.deepEqual(list, ['coming', 'todoNewer', 'otherDid', 'todoOlder', 'doneRecent'], 'to do first, newest first; done last; old, empty and cancelled left out');
+  assert.equal(core.hasHomework({ homework: { text: '', links: ['https://a.example'] } }), true);
+  assert.equal(core.hasHomework({}), false);
+});
+
 // ---------- 2. security rules ----------
 
 test('rules: who can read and write what', async () => {
@@ -218,6 +250,26 @@ test('rules: who can read and write what', async () => {
   await assertFails(updateDoc(doc(off, 'sessions/later'), { 'absences.kidOff': note() }));
   await assertSucceeds(updateDoc(doc(coach, 'sessions/later'), { 'attendance.kidB': 'absent' }));
 
+  // homework: only the coach writes it; a student ticks only their own "done", only where homework exists
+  const hw = { text: 'Solve the study', links: ['https://lichess.org/study/abc'], setAt: serverTimestamp() };
+  await assertFails(updateDoc(doc(a, 'sessions/later'), { homework: hw }));
+  await assertFails(updateDoc(doc(a, 'sessions/later'), { 'homeworkDone.kidA': serverTimestamp() }));   // no homework on it yet
+  await assertSucceeds(updateDoc(doc(coach, 'sessions/later'), { homework: hw }));
+  await assertSucceeds(updateDoc(doc(coach, 'sessions/forA'), { homework: hw }));                          // a class made before this feature, already over
+  await assertSucceeds(updateDoc(doc(a, 'sessions/later'), { 'homeworkDone.kidA': serverTimestamp() }));
+  await assertSucceeds(updateDoc(doc(a, 'sessions/forA'), { 'homeworkDone.kidA': serverTimestamp() }));
+  await assertSucceeds(updateDoc(doc(a, 'sessions/later'), { 'homeworkDone.kidA': deleteField() }));
+  await assertSucceeds(updateDoc(doc(a, 'sessions/later'), { 'homeworkDone.kidA': serverTimestamp() }));
+  await assertFails(updateDoc(doc(a, 'sessions/later'), { 'homeworkDone.kidB': serverTimestamp() }));
+  await assertFails(updateDoc(doc(a, 'sessions/later'), { 'homeworkDone.kidA': Timestamp.fromMillis(5) }));
+  await assertFails(updateDoc(doc(a, 'sessions/later'), { 'homeworkDone.kidA': true }));
+  await assertFails(updateDoc(doc(a, 'sessions/later'), { 'homeworkDone.kidA': serverTimestamp(), 'homework.text': 'no homework today' }));
+  await assertFails(updateDoc(doc(a, 'sessions/later'), { 'homework.text': 'changed' }));
+  await assertFails(updateDoc(doc(a, 'sessions/later'), { homework: deleteField() }));
+  await assertFails(updateDoc(doc(off, 'sessions/later'), { 'homeworkDone.kidOff': serverTimestamp() }));
+  await assertFails(updateDoc(doc(stranger, 'sessions/later'), { 'homeworkDone.nobody': serverTimestamp() }));
+  await assertSucceeds(updateDoc(doc(coach, 'sessions/later'), { homework: deleteField(), homeworkDone: {} }));
+
   // a deactivated student keeps their own record but loses the classes
   await assertSucceeds(getDoc(doc(off, 'students/kidOff')));
   await assertFails(getDoc(doc(off, 'sessions/forA')));
@@ -241,19 +293,19 @@ test('rules: who can read and write what', async () => {
 function client(name) {
   const app = initializeApp({ projectId: PROJECT, apiKey: 'demo-key' }, name);
   const auth = fbAuth.getAuth(app);
-  fbAuth.connectAuthEmulator(auth, 'http://127.0.0.1:9099', { disableWarnings: true });
+  fbAuth.connectAuthEmulator(auth, AUTH_URL, { disableWarnings: true });
   const db = fbStore.getFirestore(app);
-  fbStore.connectFirestoreEmulator(db, '127.0.0.1', 8080);
+  fbStore.connectFirestoreEmulator(db, '127.0.0.1', FS_PORT);
   const second = initializeApp({ projectId: PROJECT, apiKey: 'demo-key' }, name + '-second');
   const sAuth = fbAuth.getAuth(second);
-  fbAuth.connectAuthEmulator(sAuth, 'http://127.0.0.1:9099', { disableWarnings: true });
+  fbAuth.connectAuthEmulator(sAuth, AUTH_URL, { disableWarnings: true });
   const api = core.makeApi({ fb: { ...fbAuth, ...fbStore }, auth, db, secondaryAuth: async () => sAuth });
   return { api, auth, close: () => Promise.all([deleteApp(app), deleteApp(second)]) };
 }
 
 test('flow: coach adds students and a batch; students see and join only their own classes', async () => {
   await env.clearFirestore();
-  await fetch(`http://127.0.0.1:9099/emulator/v1/projects/${PROJECT}/accounts`, { method: 'DELETE' });
+  await fetch(`${AUTH_URL}/emulator/v1/projects/${PROJECT}/accounts`, { method: 'DELETE' });
   const coachId = 'testcoach', coachPw = 'test-only-pw';     // emulator only, not the real login
   const C = client('coach'), S = client('student'), T = client('other');
   try {
@@ -324,6 +376,33 @@ test('flow: coach adds students and a batch; students see and join only their ow
     seen = (await S.api.listMySessions(sUser.uid))[0];
     assert.equal(core.studentStatus(seen, aarav.id, Date.now()), 'present');
     await assert.rejects(S.api.markAttendance(mine[1], sUser.uid, 'present'), /permission/i);
+
+    // homework: coach sets it on one class; both students of the class see it; each ticks only their own
+    assert.equal(mine[2].homework, null);
+    await assert.rejects(S.api.setHomeworkDone(mine[2], sUser.uid, true), /permission/i, 'nothing to tick before homework exists');
+    await assert.rejects(C.api.setHomework(mine[2], { text: '', links: [] }), /Write the homework/);
+    await assert.rejects(C.api.setHomework(mine[2], { text: 'x', links: ['javascript:alert(1)'] }), /https/);
+    await C.api.setHomework(mine[2], { text: '  Solve chapters 1 and 2  ', links: [' https://lichess.org/study/abc ', 'https://drive.google.com/file/d/1/view'] });
+    await assert.rejects(S.api.setHomework(mine[2], { text: 'no homework', links: [] }), /permission/i);
+    let hwSeen = (await S.api.listMySessions(sUser.uid)).find((s) => s.id === mine[2].id);
+    assert.deepEqual(hwSeen.homework, { text: 'Solve chapters 1 and 2', links: ['https://lichess.org/study/abc', 'https://drive.google.com/file/d/1/view'] });
+    assert.deepEqual(core.homeworkFor(await S.api.listMySessions(sUser.uid), sUser.uid, Date.now()).map((s) => s.id), [mine[2].id]);
+    await S.api.setHomeworkDone(hwSeen, sUser.uid, true);
+    await assert.rejects(S.api.setHomeworkDone(hwSeen, diya.id, true), /permission/i);
+    hwSeen = (await C.api.listSessionsBetween(mine[2].startsAtMs - 1, mine[2].startsAtMs + 1))[0];
+    assert.ok(hwSeen.homeworkDone[aarav.id], 'the coach sees the tick');
+    assert.equal(hwSeen.homeworkDone[diya.id], undefined);
+    await C.api.setHomework(hwSeen, { text: 'Solve chapters 1 to 3', links: [] });
+    hwSeen = (await C.api.listSessionsBetween(mine[2].startsAtMs - 1, mine[2].startsAtMs + 1))[0];
+    assert.ok(hwSeen.homeworkDone[aarav.id], 'editing the homework keeps the ticks');
+    await S.api.setHomeworkDone(hwSeen, sUser.uid, false);
+    hwSeen = (await S.api.listMySessions(sUser.uid)).find((s) => s.id === mine[2].id);
+    assert.equal(hwSeen.homeworkDone[aarav.id], undefined);
+    await S.api.setHomeworkDone(hwSeen, sUser.uid, true);
+    await C.api.clearHomework(hwSeen);
+    hwSeen = (await S.api.listMySessions(sUser.uid)).find((s) => s.id === mine[2].id);
+    assert.equal(hwSeen.homework, null);
+    assert.deepEqual(hwSeen.homeworkDone, {}, 'removing the homework removes its ticks');
 
     // coach edits: batch link changes every class that has not started; one class cancelled; one moved
     const batch = (await C.api.listSeries()).find((s) => s.name === 'Beginners A');

@@ -140,3 +140,28 @@ A `file://` open does not work: browsers block module scripts there.
 - Wording lives in `welcomeMessage` / `reminderMessage` in `core.js`; `PORTAL_URL` there
   must follow the domain.
 
+## Homework (built 2026-11-17)
+- **No server, no uploads**: text plus up to 5 https links (a Lichess study, a Google Drive
+  share link for a PDF). File upload would need Firebase Storage, which is not on the free
+  plan as far as we know, so a PDF is always a link.
+- **Data** (on the existing `sessions/{id}` doc): `homework: { text, links[], setAt }` written
+  by the coach; `homeworkDone: { <studentUid>: timestamp }` written by each student. Homework
+  belongs to one class, so every student of that class (the batch) gets it.
+- **Rules**: only the coach writes `homework`. A student may set or remove only
+  `homeworkDone.<own uid>`, only on a class that carries homework, and the value must be the
+  request time. **The live project needs the rules re-published in the console** — publish
+  them before pushing, or the tick is refused on the live site.
+- **Coach**: Homework tab — pick batch, then class (defaults to the latest class that has
+  started), write text and links (one per line), Give homework / Save changes / Remove.
+  "Homework given" lists the last 3 weeks and the coming week with "N of M done" and a green
+  name per student who ticked. Editing keeps the ticks; removing clears them.
+- **Student**: Homework card under the next class — to-do first, then newest; text, link
+  buttons labelled by `linkLabel` (Lichess study, PDF, Google Drive file…), and an "I have
+  done this" tick that can be undone. Shows homework from classes in the last 30 days and
+  coming ones; a cancelled class's homework is hidden.
+- **Limits** live in `core.js` (`HOMEWORK_MAX_TEXT` 1000, `HOMEWORK_MAX_LINKS` 5,
+  `HOMEWORK_SHOWN_DAYS` 30). Only https links are saved and only https links are drawn.
+- **Out**: file upload, the student sending work back, a WhatsApp "homework set" message,
+  batch-level homework not tied to a class, Hindi labels.
+- Test ports: `PORTAL_FS_PORT` / `PORTAL_AUTH_PORT` let `portal.test.mjs` run beside
+  emulators that are already up (the three edge files still use 8080 / 9099).

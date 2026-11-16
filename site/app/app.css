@@ -97,6 +97,13 @@ details.p-more[open] > summary { margin-bottom: 14px; }
 details.p-att { padding-block: 10px; border-top: 1px solid var(--line); }
 details.p-att:first-of-type { margin-top: 12px; }
 
+/* homework */
+.portal textarea { font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 11px 12px; min-width: 0; width: 100%; resize: vertical; }
+.p-hw-text { white-space: pre-wrap; overflow-wrap: anywhere; }
+.p-hw.done { opacity: 0.75; }
+.p-tick { display: inline-flex; align-items: center; gap: 10px; font-weight: 600; cursor: pointer; }
+.p-tick input { width: 22px; height: 22px; flex: none; accent-color: var(--green); }
+
 /* WhatsApp send lines */
 .p-send { gap: 6px 14px; }
 .p-send-name { font-weight: 700; min-width: 5.5em; }
