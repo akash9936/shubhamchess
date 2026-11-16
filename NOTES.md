@@ -192,6 +192,13 @@ is unverified.
   passes the check — left alone). Branch is `master`. Old `shubhamProfile` repo is now
   superseded; its CNAME file can be deleted.
 - Claude cannot run `git add/commit/push` (workspace deny list); Akash pushes.
+- **Domain move, 2026-11-17:** Shubham bought `shubhamchessacademy.com` (GoDaddy, 3 years, about Rs 3,800).
+  All 45 URL references in `site/` + both `CNAME` files switched from `shubham.akashs.com` to the apex
+  `https://shubhamchessacademy.com`; sitemap lastmod bumped; JSON-LD and sitemap re-parsed clean.
+  Still Akash's to do: GoDaddy DNS (4 GitHub Pages A records on `@`, `www` CNAME -> `akash9936.github.io`),
+  repo Settings -> Pages -> custom domain, push, then forward `shubham.akashs.com` (301) from the
+  akashs.com zone, add the new domain to Search Console and to Firebase authorized domains.
+  With an Actions-based Pages deploy the repo setting decides the domain; the `CNAME` file is only a record.
 
 ## Hosting plan
 - **Decided 2026-11-09 (Akash): GitHub Pages, free, no server of any kind.** Features that

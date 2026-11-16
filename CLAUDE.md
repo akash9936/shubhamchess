@@ -25,7 +25,9 @@ shubham-chess-site/
 │   ├── downloads/starter-puzzles.pdf  ← lead magnet; rebuilt from scratchpad HTML via Chrome --print-to-pdf
 │   ├── media/           ← self-hosted reels (mp4 + poster jpg)
 │   ├── og.png · favicon.svg · shubham.jpg · result-commonwealth-2026.jpg · poster.jpg
+│   ├── app/             ← student portal (Firebase): index.html · app.js · core.js · app.css · firebase-config.js
 │   └── sitemap.xml · robots.txt   (CNAME to be added at deploy)
+├── firebase/            ← portal security rules + emulator tests (`npm test`); NOT deployed
 └── draft/review-draft.html  ← the 2026-10-02 artifact body the site was cut from (frozen)
 ```
 
@@ -42,7 +44,7 @@ shubham-chess-site/
   through a 390-px iframe wrapper — see NOTES.md "Verifying"). Check: tag balance, 64 `.sq`
   buttons in the dumped DOM (= JS ran), no element wider than the viewport, local links and
   `#anchors` resolve, `grep -c 'class="ph"'`.
-- **Live at `https://shubham.akashs.com`** (GitHub Pages via Actions, repo
+- **Domain is `https://shubhamchessacademy.com`** (bought 2026-11-17, GoDaddy, 3 years; every canonical / OG / JSON-LD / sitemap URL and both `CNAME` files use it — apex, no `www`). Until Akash sets DNS + the Pages custom domain and pushes, the live copy is still at `https://shubham.akashs.com`; after the switch that subdomain only forwards. (GitHub Pages via Actions, repo
   github.com/akash9936/shubhamchess, branch `master`). Every push to `site/` deploys in
   ~30 s. Akash pushes; Claude cannot (`git add/commit/push` denied).
 - `draft/` is history. Do not edit it; the review artifact
@@ -81,7 +83,15 @@ a `.ph` but is a guess (levels, rating bands, class structure) is also listed th
   *"we need to run a server for this"*, then offer the nearest alternative: static first
   (a WhatsApp link instead of a form, an embed instead of a stored record, GA4), then
   Firebase if it genuinely needs login or stored data. The student portal
-  (`docs/student-portal-plan.md`) is the first Firebase feature, planned, not started.
+  (`docs/student-portal-plan.md`) is the first Firebase feature: built 2026-11-16 in
+  `site/app/`, off until `firebase-config.js` is filled.
+- **No login, password or key in a tracked file — the repo is public.** A login is checked
+  by Firebase Auth, never by comparing strings in page JS. When Akash asks to "hard code" a
+  login, create it as a Firebase account and say why (11-16). The Firebase *web config* is
+  not a secret and may be committed.
+- **Change `firebase/firestore.rules` or `site/app/core.js` → run `npm test` in `firebase/`**
+  (Node 22, Java 11+) before saying it is done. Portal pages are checked on
+  `http://127.0.0.1:…/app/?emu`, not `file://` (module scripts are blocked there).
 - Allowed: anything that runs in the visitor's browser from static files — HTML, CSS, JS,
   `localStorage`, links out to WhatsApp / Instagram / Google Forms / Calendly, and
   third-party scripts loaded client-side (GA4).
@@ -113,7 +123,8 @@ The rules the page is written to. Feedback from Akash changes this list, never j
   card, coach cards, guides, picker result aside) goes to `#demo`, the contact form, which
   composes the WhatsApp message from the child's details; the first field is focused on
   arrival. Direct wa.me links remain only on the floating button, the contact-block number
-  and the lessons/plans sub-line. No stored forms, logins or payments.
+  and the lessons/plans sub-line. No stored forms or payments; the only login is the
+  student portal at `/app/`, which is its own page and not a call to action.
 - **Public prices = one starting-from figure per format** (group ₹1,500 · pair ₹3,000 ·
   one-to-one ₹4,500 per month), on the card and in the FAQ, with "exact fee shared in the
   free assessment class". The 3/6-month totals stay in the gitignored
@@ -158,7 +169,12 @@ The rules the page is written to. Feedback from Akash changes this list, never j
   Flag once if a supplied portrait looks generated, then use it.
 - **Shubham's voice, Shubham's facts.** Credentials only as he states them; "AIM is awarded by
   FIDE Online Arena" is the one line of Claude's wording still to be confirmed by him.
-- **No dependencies** except Google Fonts and Instagram's embed script. Must render fine if
+- **Student portal (`/app/`)**: students sign in with an access code only, the coach with a
+  fixed ID + password; screens are drawn from `styles.css` tokens plus `app/app.css` (the one
+  extra sheet, portal-only). No analytics on it, `noindex`, everything from the database
+  written as text, meeting links must be `https://`. Words: "batch", "class", "access code",
+  "Coach desk"; coach times are India time, student times are local with India underneath.
+- **No dependencies** except Google Fonts, and the Firebase SDK on `/app/` only. Must render fine if
   either fails. Pages share `styles.css`; no framework, no bundler.
 - **Static only** (see Hosting above). Any feature must work from `index.html` served as a
   plain file. **Puzzle trainer** (`#trainer`, in "Between classes"): streams puzzles from
@@ -438,3 +454,8 @@ When Akash gives feedback on the site, the copy, the design, or how this project
 - 2026-11-11 — Akash (screenshot of the contact block): add the email here too and remove the call
   number. → "Call" row replaced by "Email" (mailto:) on EN + HI (ईमेल); tel: now only in the
   footer. CSS v=20261111r (email may wrap on phones). Rule updated.
+- 2026-11-16 — Akash: coach login should be a hard-coded ID + password, and Shubham uses one
+  recurring Zoom/Meet link per batch. → Portal first version built (`site/app/`, rules + tests in
+  `firebase/`): coach signs in with a fixed ID + password held in Firebase Auth, not in the page
+  (public repo); batch form takes one link for all its classes. Google sign-in for the coach
+  dropped. Rules added: no credentials in tracked files; run the emulator tests on any rules change.

@@ -3,3 +3,8 @@ assets/
 .DS_Store
 # the review-draft artifact body is history, kept locally only
 draft/
+
+# portal test tooling
+node_modules/
+firebase/*.log
+firebase/.firebase/
