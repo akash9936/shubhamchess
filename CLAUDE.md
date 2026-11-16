@@ -475,3 +475,10 @@ When Akash gives feedback on the site, the copy, the design, or how this project
   and the two home pages switch to the jump bar from 1100 px down (was 760, where the row already
   overflowed up to 900); guide pages keep 760. CSS v=20261117c. Also fixed: "Sign out" was showing
   on the portal while signed out.
+- 2026-11-17 — Akash approved the attendance + "Can't attend" plan with one change: a student
+  can cancel only until 2 hours before the class (class at 5 → until 3; after that the button
+  must not show). → Built both: hard 2-hour cut-off in the UI and in the rules (replacing the
+  planned 3-hour warning), coach Attendance tab with monthly table, corrections, WhatsApp
+  summary and CSV, attendance line for parents. Rule: a portal limit Akash states is enforced
+  in `firestore.rules` as well as hidden in the UI, never UI-only.
+

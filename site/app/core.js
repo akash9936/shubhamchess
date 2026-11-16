@@ -5,6 +5,7 @@
 export const STUDENT_DOMAIN = 'students.local';
 export const COACH_DOMAIN = 'coach.local';
 export const JOIN_OPENS_MIN = 10;
+export const CANCEL_CUTOFF_MIN = 120;          // "Can't attend" closes 2 hours before the start (Akash, 2026-11-17)
 const IST_OFFSET_MS = 330 * 60000;            // India has no daylight saving
 const CODE_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'; // no I, L, O, 0, 1
 
@@ -111,6 +112,49 @@ export function joinState(session, nowMs) {
   return 'upcoming';
 }
 
+// ---------- attendance ----------
+
+// A student may say "can't attend" (or take it back) only until 2 hours before the start.
+export function canCancel(session, nowMs) {
+  return session.status !== 'cancelled' && nowMs < session.startsAtMs - CANCEL_CUTOFF_MIN * 60000;
+}
+
+// One student in one class. First match wins:
+// 'cancelled' (not counted) · coach's mark · pressed Join → 'present' · told us → 'informed'
+// · class over → 'absent' · otherwise 'upcoming'.
+export function studentStatus(session, uid, nowMs) {
+  if (session.status === 'cancelled') return 'cancelled';
+  const mark = (session.attendance || {})[uid];
+  if (mark === 'present' || mark === 'absent') return mark;
+  if ((session.joins || {})[uid]) return 'present';
+  if ((session.absences || {})[uid]) return 'informed';
+  return nowMs >= session.endsAtMs ? 'absent' : 'upcoming';
+}
+
+// Counts over classes that have ended. Returns { uid: { held, present, informed, absent, rows } }.
+export function attendanceSummary(sessions, nowMs) {
+  const out = {};
+  for (const s of sessions) {
+    if (s.endsAtMs > nowMs) continue;
+    for (const uid of s.studentIds) {
+      const st = studentStatus(s, uid, nowMs);
+      if (st === 'cancelled') continue;
+      const row = out[uid] || (out[uid] = { held: 0, present: 0, informed: 0, absent: 0, rows: [] });
+      row.held++; row[st]++; row.rows.push({ session: s, status: st });
+    }
+  }
+  return out;
+}
+
+export const percent = (row) => (row.held ? Math.round((row.present / row.held) * 100) : 0);
+
+// 'YYYY-MM' on the Indian calendar → [fromMs, toMs)
+export function monthRangeIST(month) {
+  const [y, m] = month.split('-').map(Number);
+  const next = m === 12 ? (y + 1) + '-01' : y + '-' + String(m + 1).padStart(2, '0');
+  return { fromMs: istToUtcMs(month + '-01', '00:00'), toMs: istToUtcMs(next + '-01', '00:00') };
+}
+
 // ---------- data layer ----------
 
 const BATCH_LIMIT = 400;
@@ -126,6 +170,8 @@ export function makeApi({ fb, auth, db, secondaryAuth }) {
     startsAtMs: s.startsAt.toMillis(),
     endsAtMs: s.endsAt.toMillis(),
     joins: s.joins || {},
+    absences: s.absences || {},
+    attendance: s.attendance || {},
   });
   const byStart = (a, b) => a.startsAtMs - b.startsAtMs;
 
@@ -152,6 +198,8 @@ export function makeApi({ fb, auth, db, secondaryAuth }) {
     status: 'scheduled',
     note: '',
     joins: {},
+    absences: {},
+    attendance: {},
   });
 
   return {
@@ -323,8 +371,19 @@ export function makeApi({ fb, auth, db, secondaryAuth }) {
       await fb.updateDoc(ref('sessions', session.id), next);
     },
 
-    // The student's own join time — the only thing a student can write.
+    // The student's own join time and own "can't attend" note — all a student can write.
     recordJoin: (session, uid) =>
       fb.updateDoc(ref('sessions', session.id), { ['joins.' + uid]: fb.serverTimestamp() }),
+
+    setAbsence: (session, uid, reason) =>
+      fb.updateDoc(ref('sessions', session.id), {
+        ['absences.' + uid]: { at: fb.serverTimestamp(), reason: String(reason || '').trim().slice(0, 200) },
+      }),
+    clearAbsence: (session, uid) =>
+      fb.updateDoc(ref('sessions', session.id), { ['absences.' + uid]: fb.deleteField() }),
+
+    // Coach's own mark for one student: 'present', 'absent', or null to go back to automatic.
+    markAttendance: (session, uid, value) =>
+      fb.updateDoc(ref('sessions', session.id), { ['attendance.' + uid]: value || fb.deleteField() }),
   };
 }

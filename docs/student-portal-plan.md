@@ -96,3 +96,30 @@ A `file://` open does not work: browsers block module scripts there.
   who makes an account gets nothing — the rules test covers it.
 - Unchecked on the real service: that it accepts `@coach.local` / `@students.local`
   addresses (the emulator does). If it refuses, change the two domains at the top of `core.js`.
+
+## Attendance report + "Can't attend" (built 2026-11-17)
+- **Data** (both on the existing `sessions/{id}` doc, no new collection):
+  `absences: { <studentUid>: { at, reason } }` written by the student; `attendance:
+  { <studentUid>: 'present' | 'absent' }` written by the coach as an override.
+- **Status of one student in one class**, first match wins: class cancelled → not counted ·
+  coach mark · pressed Join → present · told us in advance → absent (informed) · class over
+  → absent (no notice) · else upcoming. `studentStatus` in `core.js`.
+- **2-hour cut-off (Akash, 2026-11-17):** a student can say "can't attend", or take it back,
+  only until 2 hours before the start (class at 5:00 → open until 2:59, gone from 3:00). The
+  button is hidden after that and the rules refuse the write; `CANCEL_CUTOFF_MIN` in
+  `core.js` and `duration.value(2, 'h')` in `firestore.rules` must change together.
+  Replaces the planned "warn inside 3 hours, never block".
+- **Rules**: a student may additionally set or remove only `absences.<own uid>`, only on a
+  scheduled class, only before the cut-off, `reason` ≤ 200 chars, `at == request.time`.
+  **The live project needs the rules re-published in the console** for this to work.
+- **Student**: "Can't attend this class" on the next-class card and each coming class →
+  optional reason → "You told us you can't attend" with an undo; inside 2 hours the card
+  says to message on WhatsApp instead. "This month: attended N of M" in the heading; past
+  classes show Attended / Told us / Missed.
+- **Coach**: Classes tab — name chips are green / amber / red, the reason is printed under
+  the class, tapping a name cycles automatic → attended → missed (a dot marks a hand mark).
+  Attendance tab — month (India calendar) + batch filter, table per student (held ·
+  attended · told us · no notice · %), class-by-class correction, a WhatsApp summary to
+  copy, spreadsheet (CSV) download.
+- **Out**: automatic notice to the coach, make-up scheduling (a one-off class button is the
+  follow-up), attendance for classes before the portal existed.

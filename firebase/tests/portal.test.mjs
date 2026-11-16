@@ -79,10 +79,29 @@ test('only https meeting links are accepted', () => {
   assert.match(core.validateSeries({ name: 'A', studentIds: ['x'], weekdays: [1], startDate: '2026-11-16', startTime: '17:00', durationMin: 50, weeks: 12, link: 'javascript:1' }), /https/);
 });
 
+test("can't attend closes 2 hours before; status and monthly summary", () => {
+  const s = { startsAtMs: 17 * HOUR, endsAtMs: 18 * HOUR, status: 'scheduled', studentIds: ['a', 'b', 'c', 'd'], joins: { a: 1 }, absences: { b: { reason: 'trip' }, d: {} }, attendance: { d: 'present' } };
+  assert.equal(core.canCancel(s, 15 * HOUR - 1), true, 'class at 5, 2:59 is fine');
+  assert.equal(core.canCancel(s, 15 * HOUR), false, 'class at 5, closed from 3');
+  assert.equal(core.canCancel({ ...s, status: 'cancelled' }, 0), false);
+  const before = 10 * HOUR, after = 19 * HOUR;
+  assert.deepEqual(['a', 'b', 'c', 'd'].map((u) => core.studentStatus(s, u, before)), ['present', 'informed', 'upcoming', 'present']);
+  assert.deepEqual(['a', 'b', 'c', 'd'].map((u) => core.studentStatus(s, u, after)), ['present', 'informed', 'absent', 'present']);
+  assert.equal(core.studentStatus({ ...s, attendance: { a: 'absent' } }, 'a', after), 'absent', 'the coach mark beats a Join press');
+  assert.equal(core.studentStatus({ ...s, joins: { b: 1 } }, 'b', after), 'present', 'turned up after saying no');
+  assert.equal(core.studentStatus({ ...s, status: 'cancelled' }, 'a', after), 'cancelled');
+  const sum = core.attendanceSummary([s, { ...s, joins: {}, absences: {}, attendance: {} }, { ...s, status: 'cancelled' }, { ...s, startsAtMs: 40 * HOUR, endsAtMs: 41 * HOUR }], after);
+  assert.deepEqual([sum.a.held, sum.a.present, sum.a.informed, sum.a.absent], [2, 1, 0, 1]);
+  assert.deepEqual([sum.b.held, sum.b.present, sum.b.informed, sum.b.absent], [2, 0, 1, 1]);
+  assert.equal(core.percent(sum.a), 50);
+  assert.equal(core.percent({ held: 0, present: 0 }), 0);
+  assert.deepEqual(Object.values(core.monthRangeIST('2026-12')).map((ms) => new Date(ms).toISOString()), ['2026-11-30T18:30:00.000Z', '2026-12-31T18:30:00.000Z']);
+});
+
 // ---------- 2. security rules ----------
 
 test('rules: who can read and write what', async () => {
-  const { doc, getDoc, setDoc, updateDoc, deleteDoc, getDocs, collection, query, where, serverTimestamp, Timestamp } = fbStore;
+  const { doc, getDoc, setDoc, updateDoc, deleteDoc, deleteField, getDocs, collection, query, where, serverTimestamp, Timestamp } = fbStore;
   await env.clearFirestore();
   await env.withSecurityRulesDisabled(async (ctx) => {
     const db = ctx.firestore();
@@ -94,6 +113,12 @@ test('rules: who can read and write what', async () => {
     const base = { seriesId: 's1', startsAt: Timestamp.fromMillis(1), endsAt: Timestamp.fromMillis(2), link: 'https://meet.example/1', status: 'scheduled', joins: {} };
     await setDoc(doc(db, 'sessions/forA'), { ...base, studentIds: ['kidA', 'kidOff'] });
     await setDoc(doc(db, 'sessions/forB'), { ...base, studentIds: ['kidB'] });
+    const at = (h) => ({ startsAt: Timestamp.fromMillis(Date.now() + h * HOUR), endsAt: Timestamp.fromMillis(Date.now() + (h + 1) * HOUR) });
+    await setDoc(doc(db, 'sessions/later'), { ...base, ...at(5), studentIds: ['kidA', 'kidB', 'kidOff'], absences: {}, attendance: {} });
+    await setDoc(doc(db, 'sessions/laterOld'), { ...base, ...at(5), studentIds: ['kidA'] });            // made before this feature: no absences field
+    await setDoc(doc(db, 'sessions/soon'), { ...base, ...at(1.9), studentIds: ['kidA'], absences: {} });
+    await setDoc(doc(db, 'sessions/laterCancelled'), { ...base, ...at(5), studentIds: ['kidA'], status: 'cancelled', absences: {} });
+    await setDoc(doc(db, 'sessions/soonNoted'), { ...base, ...at(1), studentIds: ['kidA'], absences: { kidA: { reason: 'x' } } });
   });
   const as = (uid) => (uid ? env.authenticatedContext(uid) : env.unauthenticatedContext()).firestore();
   const anon = as(null), coach = as('coach1'), a = as('kidA'), off = as('kidOff'), stranger = as('nobody');
@@ -129,6 +154,27 @@ test('rules: who can read and write what', async () => {
   await assertFails(deleteDoc(doc(a, 'sessions/forA')));
   await assertFails(updateDoc(doc(a, 'students/kidA'), { active: true }));
   await assertFails(setDoc(doc(a, 'sessions/new'), { studentIds: ['kidA'] }));
+
+  // "can't attend": own note only, well-formed, and only until 2 hours before the start
+  const note = (reason = 'Family trip') => ({ at: serverTimestamp(), reason });
+  await assertSucceeds(updateDoc(doc(a, 'sessions/later'), { 'absences.kidA': note() }));
+  await assertSucceeds(updateDoc(doc(a, 'sessions/later'), { 'absences.kidA': note('') }));
+  await assertSucceeds(updateDoc(doc(a, 'sessions/laterOld'), { 'absences.kidA': note() }));
+  await assertSucceeds(updateDoc(doc(a, 'sessions/later'), { 'absences.kidA': deleteField() }));
+  await assertFails(updateDoc(doc(a, 'sessions/later'), { 'absences.kidB': note() }));
+  await assertFails(updateDoc(doc(a, 'sessions/later'), { 'absences.kidA': { at: Timestamp.fromMillis(5), reason: 'x' } }));
+  await assertFails(updateDoc(doc(a, 'sessions/later'), { 'absences.kidA': note('x'.repeat(201)) }));
+  await assertFails(updateDoc(doc(a, 'sessions/later'), { 'absences.kidA': { ...note(), extra: 1 } }));
+  await assertFails(updateDoc(doc(a, 'sessions/later'), { 'absences.kidA': 'yes' }));
+  await assertFails(updateDoc(doc(a, 'sessions/soon'), { 'absences.kidA': note() }));
+  await assertFails(updateDoc(doc(a, 'sessions/soonNoted'), { 'absences.kidA': deleteField() }));
+  await assertFails(updateDoc(doc(a, 'sessions/laterCancelled'), { 'absences.kidA': note() }));
+  await assertFails(updateDoc(doc(a, 'sessions/forA'), { 'absences.kidA': note() }));          // already over
+  await assertFails(updateDoc(doc(a, 'sessions/later'), { 'attendance.kidA': 'present' }));    // the coach's mark is not theirs
+  await assertFails(updateDoc(doc(a, 'sessions/later'), { 'absences.kidA': note(), status: 'cancelled' }));
+  await assertSucceeds(updateDoc(doc(a, 'sessions/later'), { 'absences.kidA': note(), 'joins.kidA': serverTimestamp() }));
+  await assertFails(updateDoc(doc(off, 'sessions/later'), { 'absences.kidOff': note() }));
+  await assertSucceeds(updateDoc(doc(coach, 'sessions/later'), { 'attendance.kidB': 'absent' }));
 
   // a deactivated student keeps their own record but loses the classes
   await assertSucceeds(getDoc(doc(off, 'students/kidOff')));
@@ -218,6 +264,24 @@ test('flow: coach adds students and a batch; students see and join only their ow
     const first = today.find((s) => s.seriesName === 'Beginners A');
     assert.ok(first.joins[aarav.id], 'join stamp visible to the coach');
     assert.equal(first.joins[diya.id], undefined);
+
+    // can't attend: refused for the class an hour away, accepted for tomorrow's, and can be taken back
+    await assert.rejects(S.api.setAbsence(mine[0], sUser.uid, 'late'), /permission/i);
+    await S.api.setAbsence(mine[1], sUser.uid, '  Family trip  ');
+    let seen = (await C.api.listSessionsBetween(mine[1].startsAtMs - 1, mine[1].startsAtMs + 1))[0];
+    assert.equal(seen.absences[aarav.id].reason, 'Family trip');
+    assert.equal(core.studentStatus(seen, aarav.id, Date.now()), 'informed');
+    await S.api.clearAbsence(mine[1], sUser.uid);
+    seen = (await C.api.listSessionsBetween(mine[1].startsAtMs - 1, mine[1].startsAtMs + 1))[0];
+    assert.equal(core.studentStatus(seen, aarav.id, Date.now()), 'upcoming');
+    // coach mark overrides, and null puts it back to automatic
+    await C.api.markAttendance(first, aarav.id, 'absent');
+    seen = (await S.api.listMySessions(sUser.uid))[0];
+    assert.equal(core.studentStatus(seen, aarav.id, Date.now()), 'absent');
+    await C.api.markAttendance(first, aarav.id, null);
+    seen = (await S.api.listMySessions(sUser.uid))[0];
+    assert.equal(core.studentStatus(seen, aarav.id, Date.now()), 'present');
+    await assert.rejects(S.api.markAttendance(mine[1], sUser.uid, 'present'), /permission/i);
 
     // coach edits: batch link changes every class that has not started; one class cancelled; one moved
     const batch = (await C.api.listSeries()).find((s) => s.name === 'Beginners A');
