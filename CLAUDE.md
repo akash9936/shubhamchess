@@ -498,4 +498,7 @@ When Akash gives feedback on the site, the copy, the design, or how this project
   The page was calling every database refusal a late cancellation. It now says that only when
   the clock agrees; otherwise "This could not be saved just now" plus WhatsApp. Rule: a portal
   error names a cause only when the code has checked it.
+- 2026-11-17 — Akash: highlight the "Open link" button so it is visible. → On the coach's Classes
+  tab it is now the amber primary button, not a text link. Rule: the one thing the coach does
+  most on a row (open the class) is a button; secondary actions stay text links.
 

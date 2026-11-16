@@ -395,7 +395,7 @@ async function coachView() {
     return h('div', { class: 'p-row' + (cancelled ? ' cancelled' : ''), style: 'margin-top:10px' },
       h('div', { class: 'p-row-top' },
         h('b', {}, timeIST(s.startsAtMs) + ' – ' + timeIST(s.endsAtMs) + ' · ' + s.seriesName),
-        cancelled ? h('span', { class: 'p-pill off' }, 'Cancelled') : isHttpsUrl(s.link) ? h('a', { href: s.link, target: '_blank', rel: 'noopener' }, 'Open link') : null),
+        cancelled ? h('span', { class: 'p-pill off' }, 'Cancelled') : isHttpsUrl(s.link) ? h('a', { class: 'btn primary small', href: s.link, target: '_blank', rel: 'noopener' }, 'Open link') : null),
       h('div', { class: 'p-names' }, s.studentIds.map((id) => {
         const st = studentStatus(s, id, Date.now());
         const cls = st === 'present' ? 'in' : st === 'informed' ? 'away' : st === 'absent' ? 'out' : '';
