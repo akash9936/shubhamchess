@@ -231,3 +231,10 @@ go-live step 1; not possible inside the artifact draft.
   already teaches through online portals; a classroom platform is months of work and is
   what Chessido sells for ~₹12k/year.
 - Email: shubhamsinghchessacademy@gmail.com (Akash, 2026-11-11) — in every page footer.
+
+## Facts added 2026-11-17 (from Shubham, via a screenshot Akash pasted)
+- Title on the site: "Founder & Head Coach | Arena International Master (AIM)".
+- New achievement: represented Chhattisgarh in SGFI School Games (no year given).
+- Intro line and mission quote on the founder card are his wording, kept verbatim.
+- The two other coach profiles were removed the same day; whether they still teach was not said.
+

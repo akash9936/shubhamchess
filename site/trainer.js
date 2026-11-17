@@ -34,7 +34,7 @@
       b.type = "button"; b.dataset.sq = id;
       var f = FILES.indexOf(id[0]), r = +id[1];
       b.className = "sq " + ((f + r) % 2 === 0 ? "l" : "d");
-      if (pc) { b.textContent = GLYPH[pc.type] + "︎"; b.classList.add(pc.color); }
+      if (pc) { b.classList.add(pc.color); b.dataset.pc = pc.color + pc.type; }   // drawn by CSS from vendor/pieces (styles.css)
       b.setAttribute("aria-label", id + (pc ? ", " + (pc.color === "w" ? S.white : S.black) + " " + (S.pieces || {})[pc.type] : ", " + S.empty));
       if (id === picked) b.classList.add("pick");
       if (last && (id === last.from || id === last.to)) b.classList.add("last");

@@ -102,10 +102,9 @@ a `.ph` but is a guess (levels, rating bands, class structure) is also listed th
 
 The rules the page is written to. Feedback from Akash changes this list, never just the HTML.
 
-- **Three coaches, so the academy is "we" / "our coaches"**, never "he" (11-10). Shubham
-  by name only where the fact is his alone (WhatsApp replies, the free assessment).
-- **Three coaches, so the academy is "we" / "our coaches"**, never "he" (11-10). Shubham
-  by name only where the fact is his alone (WhatsApp replies, the free assessment, his reels).
+- **One coach on the site: Shubham** (11-17; the two other coach profiles and their photos were
+  removed at his word). Academy copy stays "we"; anything about who teaches is singular
+  ("a FIDE-rated coach", "your coach", "Shubham"), never "our coaches" or a coach count.
 - **Levels are a learning map**: each level card = who it is for (italic line) + six topics in
   teaching order + a meta row "Placed by the free assessment". No rating bands, no durations,
   no "3 months" promises. New topics go in order, not appended.
@@ -135,13 +134,16 @@ The rules the page is written to. Feedback from Akash changes this list, never j
   free assessment itself — Akash removed the per-card buttons 11-10). One-to-one is `.featured`. Every bullet comes from his FAQ / class
   plans; no EMI, discounts, "save X%" or session counts we have not been given.
 - **Every page has the floating WhatsApp button** (`.wa-float`). The `tel:` link lives in the
-  footer only; the contact block (EN + HI) lists WhatsApp, Email, Instagram, Timings,
-  Classes on, with no separate Call row (Akash, 11-11). Clicks on wa.me / tel: / download links fire a GA4 `contact_click`
+  footer only; the contact block (EN + HI) lists WhatsApp, Email and Instagram only: no Call row
+  (Akash, 11-11), no Timings or "Classes on" rows (removed 11-17; the FAQ still covers both). Clicks on wa.me / tel: / download links fire a GA4 `contact_click`
   event (property `G-JBH3RL4PTN`, loaded via gtag.js in every page's `<head>`). A new
   page must carry the same snippet; guide pages are the template.
-- **Hindi page mirrors the English one** for anything a parent decides on (hero, levels,
-  class, coach, results, plans, FAQ, contact). Reviews stay in the parents' original English.
-  Change both pages together.
+- **English only. There is no Hindi page** (removed 11-17 at Akash's word): no `site/hi/`, no
+  हिन्दी switch in the header, no `hreflang` links, no `/hi/` in the sitemap. Ignore every
+  older "mirror on `hi/`" / "EN + HI" line in this file and in the log; do not rebuild it
+  unless he asks. The last version is in git history (commit d2e73c3 and the 11-17 working tree
+  before this change). `demo-form.js`, `nav.js` and `trainer.js` still carry Hindi strings
+  that are now unused. The stylesheet is linked from five pages (home, three guides, `app/`).
 - **Instagram is the second door.** His profile (https://www.instagram.com/shubhamsinghchess/)
   is linked wherever it is named: header nav, hero facts, lessons section, contact, footer.
   Always `target="_blank" rel="noopener"`. `<domain>/instagram` is a static redirect to it;
@@ -154,21 +156,35 @@ The rules the page is written to. Feedback from Akash changes this list, never j
   reel** (`instagram.com/reel/<code>/`, new tab), never the profile; a chip without a known reel
   link falls back to the profile until Akash/Shubham supplies the link. Instagram's `embed.js` is NOT used: Akash wants only the video,
   and the embed's like/comment/"View more" chrome cannot be removed (2026-11-10).
-- **Coaches section** (`#coach`, heading "Meet our coaches", no sub-line) is a **one-at-a-time
-  slider** (`#cslider` → `.cslides` → `article.cslide`, dots + arrows, swipe on touch,
-  auto-advance 7 s paused on hover/focus, off under reduced-motion; JS inline near the demo
-  form). Each slide: circular photo (`.cphoto`, object-position per coach) left, `.cbody`
-  right with eyebrow "Coach", name + rating tag, bio paragraphs, uniform `.chips`, CTA.
-  Replaced the sliding strip on 11-11 (Akash's reference: circular portrait + text + dots).
-  Each card: 4:3 photo on top with a `.badge` that reads "Coach" for everyone (no Head coach rank, 11-10), name + short `.tag`, one short
-  paragraph (bio verbatim; no personal quotes — Akash removed Shubham's 11-10), uniform green `.chips` (value-only text, same size on every card; Shubham's four:
-  3× Chhattisgarh State Champion · Senior State Championship – 3rd Place · 3+ Years Online
-  Coaching Experience · FIDE Rating 1738), equal card heights with the CTA pinned to the
-  bottom, and a "Free assessment class"
-  WhatsApp link at the foot. Akash chose this over the stacked bio layout (2026-11-10, after
-  seeing a tutor-card reference). Card photos are `site/<name>-card.jpg` (900×675). Mirror on
-  `hi/`. Intro video (item 23), when it exists, goes in Shubham's card in place of the photo.
-  Flag once if a supplied portrait looks generated, then use it.
+- **Founder section** (`#coach`, heading "Meet the founder", nav label still "Coach") is **one
+  card for Shubham, no slider** (11-17): `article.cslide.solo` with `.cphoto.full` left and
+  `.cbody` right: name + `FIDE 1738` tag, `.crole` line "Founder & Head Coach | Arena
+  International Master (AIM)", one intro sentence, `.clist` of four ticked achievements
+  (three-time state champion U17/U19/U25 · 3rd place Senior State · represented Chhattisgarh
+  in SGFI School Games · 3+ years online coaching), `.cquote` mission line, "Free assessment
+  class" link to `#demo`. The wording is Shubham's own (sent 11-17) and stays verbatim; the
+  "Head Coach" title and the personal quote, both removed 11-10, are back at his word. Stacks
+  and centres on phones. **The photo is shown whole**, as a 2:3 rounded rectangle
+  (`site/shubham.jpg`, 537×806, cut from the summer-camp poster in `assets/` on 11-17: head to
+  hands and pieces, the poster's gold edge painted out of one corner), never a circle or a
+  tighter crop. Linked as `shubham.jpg?v=N`; bump N when the file changes. An original camera
+  file would still be sharper; swap it in when he sends one. Mirror on `hi/`. The old slider and chip CSS
+  (`.cslider`, `.cnav`, `.cdot`, `.steps`) is unused and can go in a later tidy.
+- **"One class, in four moves" is ONE diagram** (`#class`, 11-17): `.cycle-fig`, a four-colour
+  ring (`svg.cycle-ring`, green / amber / teal / violet) in the middle with the four moves
+  around it (`ol.cycle-pts`: 4 top-left, 1 top-right, 3 bottom-left, 2 bottom-right, matching
+  the ring), each a name plus ONE short line. No separate list of step cards beside it (Akash:
+  "image only is the better option"). It is drawn in HTML/SVG, not a picture file, so it stays
+  sharp, follows the theme and translates. On phones the ring sits on top and the four moves
+  stack under it. Motivate → Discover → Apply → Take charge. The shape follows a reference
+  Shubham sent (another coach's diagram); **the words are ours**, from facts already on the
+  site. Do not paste another coach's wording or graphic. Mirror on `hi/`.
+- **No "Guides for parents" section on the home page** (removed 11-17), and no "Guides" link
+  in the header or phone menu. The three guide pages stay live at `/guides/*.html` and in the
+  sitemap (they bring search visitors), reachable by direct link only; do not link them from
+  the home page again unless Akash asks. Home-page header is now eight links.
+- **No "How to join" section** (removed 11-17): the path to a first class is the free
+  assessment form, not a separate four-step strip.
 - **Shubham's voice, Shubham's facts.** Credentials only as he states them; "AIM is awarded by
   FIDE Online Arena" is the one line of Claude's wording still to be confirmed by him.
 - **Student portal (`/app/`)**: students sign in with an access code only, the coach with a
@@ -176,9 +192,14 @@ The rules the page is written to. Feedback from Akash changes this list, never j
   extra sheet, portal-only). No analytics on it, `noindex`, everything from the database
   written as text, meeting links must be `https://`. Words: "batch", "class", "access code",
   "Coach desk"; coach times are India time, student times are local with India underneath.
-  "Login" sits last in the header nav on every page (and in the phone jump bar), as a plain
-  link, never a button; `/app/` opens on a Student / Coach chooser, then the matching form.
-- **No dependencies** except Google Fonts, and the Firebase SDK on `/app/` only. Must render fine if
+  The header link to it reads **"Join classroom"** (HI: क्लासरूम जॉइन करें) and is
+  **highlighted** (11-17): `a.nav-join`, last in the header nav on every page, an amber-outlined
+  pill; a full-width amber row in the phone menu; an amber pill in the jump bar. It stays
+  second to the solid amber "Free assessment" button, so it is outlined, never filled. The
+  word "Login" is gone from the public header (the footer keeps "Student login"). The longer
+  label needs `nav.links` at 13 px gap from 1101 px up or the brand name gets cut. `/app/`
+  opens on a Student / Coach chooser, then the matching form.
+- **No dependencies** except Google Fonts, the self-hosted piece drawings, and the Firebase SDK on `/app/` only. Must render fine if
   either fails. Pages share `styles.css`; no framework, no bundler.
 - **Static only** (see Hosting above). Any feature must work from `index.html` served as a
   plain file. **Puzzle trainer** (`#trainer`, in "Between classes"): streams puzzles from
@@ -187,6 +208,14 @@ The rules the page is written to. Feedback from Akash changes this list, never j
   chess.js (the cdnjs build is an ES module and cannot be a plain `<script>`); solved count
   and streak in localStorage only; `puzzle_solved` GA event. Test it headless with a probe
   that clicks squares (see NOTES → Verifying).
+- **Puzzle trainer look (11-17)**: a deep-green panel (same family as the hero and contact
+  block, dark in both themes), amber level tabs, a status bar with an amber edge, stat tiles
+  with amber numbers, and the board in a dark wood frame with a gold edge. **Pieces are drawn
+  images, not font glyphs**: the cburnett set, self-hosted in `site/vendor/pieces/*.svg`
+  (GPLv2+, credit line in the trainer note and `README.txt` there; keep both). `trainer.js`
+  sets `data-pc="wk"` etc. on each square and `styles.css` paints it via `::after`; a piece
+  rule must not be overridden by a `background:` shorthand on the same pseudo-element.
+  `trainer.js` is linked with `?v=`; bump it when the script changes.
 - **Phone first.** 16 px side gutters, no horizontal scroll, board usable with a thumb.
   **Header is one row at every width** (11-17): brand and buttons never wrap. On narrow
   screens `nav.js` puts the header links behind a Menu button (panel of 48 px rows plus the
@@ -531,3 +560,38 @@ When Akash gives feedback on the site, the copy, the design, or how this project
   line, and the booking form's hidden "Website" trap field no longer shows (`.field` was
   overriding `hidden`). Home page 20,675 → 17,380 px tall at 390 px; desktop unchanged. CSS
   v=20261117p. Rule added under Phone first.
+- 2026-11-17 — Akash/Shubham: remove the teachers' profiles, keep only Shubham's, and show his
+  full photo. → Coach slider replaced by one card on EN + HI ("Meet your coach", nav "Coach");
+  photo is the whole 4:5 portrait instead of a circular crop of a tighter one; slider JS removed;
+  the two coaches' photos and the unused `shubham-card.jpg` deleted from `site/`; "FIDE-rated
+  coaches" / "our coaches" copy made singular (meta, OG, hero, lessons lede, portal meta). CSS
+  v=20261117q. Rules rewritten: one coach on the site; coach photo shown whole.
+- 2026-11-17 — Akash/Shubham sent three screenshots: a "Meet the Founder" block, another coach's
+  four-part lesson cycle, and our "How to join" strip, with "update teacher show, update one
+  class in four moves, and remove [the strip]". → Coach card became the founder card with his
+  text verbatim (role line, four achievements incl. SGFI School Games, mission quote); the
+  class section became a four-colour cycle with our own wording; `#join` removed. EN + HI. CSS
+  v=20261117r. Rules added for all three.
+- 2026-11-17 — Akash: "remove guides for parents". → `#guides` section and both "Guides" nav links
+  removed from the English home page (HI never had them); the three guide pages kept live, with
+  their own dead "Guides" header link and breadcrumb link removed. Rule added.
+- 2026-11-17 — Akash: remove the Timings and "Classes on" rows (Hindi too), and replace the Login
+  button with a highlighted "Join classroom". → Both rows removed from the contact block on EN +
+  HI; the header link on all five pages (and the jump bar) is now `a.nav-join`, an amber-outlined
+  pill, "क्लासरूम जॉइन करें" on HI. The longer label cut off the academy name, so the nav gap is
+  tighter on wide screens. CSS v=20261117t. Reverses the same-day "Login is a plain link, never
+  a button" rule.
+- 2026-11-17 — Akash sent the summer-camp poster after "get a proper photo" was recommended. →
+  Founder photo re-cut from it: larger (537×806 against 456×570) and fuller (hands on the pieces
+  now in frame), 2:3 instead of 4:5, on EN + HI; poster saved in `assets/`. CSS v=20261117u.
+- 2026-11-17 — Akash, on the four-moves section: "I think image only is the better option". →
+  The ring-plus-four-cards layout became one diagram: ring in the middle, the four moves around
+  it, one line each (text shortened); stacks on phones. EN + HI. CSS v=20261117v. Rule rewritten.
+- 2026-11-17 — Akash: "I said remove Hindi, it is still showing". His earlier "remove hindi one
+  also" meant the Hindi page, not the Hindi copy of two contact rows (my misreading). → `site/hi/`
+  deleted, the हिन्दी header switch, hreflang links and the sitemap entry removed. Rule: the site
+  is English only.
+- 2026-11-18 — Akash, on the puzzle trainer: "this one is looking ugly, make it more attractive".
+  → Trainer panel turned deep green with amber accents, board put in a framed surround, font-glyph
+  pieces replaced by the cburnett SVG set (self-hosted, credited). CSS v=20261117w, trainer.js
+  ?v=20261117a. Rule added.
